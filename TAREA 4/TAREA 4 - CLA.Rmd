@@ -1,0 +1,653 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 4 - Estadisticas de tendencia Central"
+author: "Por: Cesar Omar Lopez Arteaga"
+date: "Febrero 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# Pregunta 1
+
+<p align="justify">
+Bajar el archivo Pasteles: trata-se de evaluaciones de pasteles con 
+crema.
+</p>
+
+<br>
+
+<p align="justify">
+Para leer los datos del archivo Pasteles.csv en R, se usara la biblioteca **rio**. 
+Esta biblioteca es útil porque simplifica el proceso de lectura y escritura de datos
+en diferentes formatos, al proporcionar una función (import()) que 
+automáticamente detecta el formato del archivo y carga los datos de manera adecuada.
+</p> 
+
+Primero, necesitas instalar y cargar la biblioteca rio, lo cual se hace con los
+siguientess comandos:
+
+
+```{r,eval=FALSE}
+# Instalar la biblioteca rio si aún no está instalada
+install.packages("rio",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+# Cargar la biblioteca rio
+library(rio)
+```
+
+<p align="justify">
+Se descargara el archivo Pasteles.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("G:/R IMCA/TAREA 4/DESCARGA_DATA/Pasteles.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv,n=15)
+```
+
+<br>
+
+
+# Pregunta 2
+
+<p align="justify">
+Calcular distribución, moda, y entropía absoluta, relativa y también 
+los cuantiles (0.01, 0.025, 0.05, 0.25, 0.50, 0.75, 0.95, 0.975, 0.99) de 
+las variables 8, 9, 10, consideradas numéricas, aún sean ordenadas. Calcular 
+como indicado y con la función quantile().
+</p>
+
+
+```{r,eval=FALSE }
+# Instalar el paquete para el calculo de moda
+install.packages("DescTools",repos = "https://cloud.r-project.org/")
+```
+
+
+```{r}
+# Cargar el paquete para el calculo de la moda
+library(DescTools)
+```
+
+
+```{r}
+# definicion de funcion que calcula los cuartiles
+Calc<-function(df,columna){
+  
+  nombres<-names(df)
+  for(i in 1:length(columna)){
+    cat("#######################   Variable",nombres[columna[i]],"  ########################\n")
+    
+    # Calculo de la frecuencia de cada variable
+    frecuencia<-eval(parse(text = paste0("table(df[,",columna[i],"])")))
+    
+    # Calculo de la frecuencia relativa de cada variable
+    frecuencia_Relativa<-frecuencia/sum(frecuencia)
+    
+    # Calculo de la Entropia
+    h = -sum(frecuencia_Relativa*log(frecuencia_Relativa,2)) 
+    
+    # Calculo de la moda
+    moda<-eval(parse(text = paste0("Mode(df[,",columna[i],"])")))
+    
+    # Impresion de las frecuencias
+    cat("--------------- frecuencia de la variable",nombres[columna[i]],"-------------------\n")
+    print(cbind(frecuencia,frecuencia_Relativa))
+   
+    # Impresion de la Entropia
+    cat("--------------- Entropia de la variable",nombres[columna[i]],"-------------------\n")
+    print(quote=FALSE, paste0(prefix="Entropia total de la variable ",nombres[i]," es: "))
+    print(h)
+   
+    # Impresion de la Moda
+    cat("----------------- Moda de la Variable",nombres[columna[i]],"---------------------\n")
+    print(paste0("La moda de ",nombres[i]," es: "),quote=FALSE)
+    print(moda)
+    
+    # Impresion de los cuantiles
+    cat("------------- Cuantiles de la Variable",nombres[columna[i]],"-------------------\n")
+    datos<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    resultado <- quantile(datos, probs =c(0.01,0.025,0.05,0.25, 0.5, 0.75, 0.95,0.975,0.99))
+    print(resultado)
+    
+    #definicion de colores arbitrarios para los graficos
+    color<-sample(1:length(frecuencia),length(frecuencia),replace=FALSE)
+    
+    # Gráfico de barras
+    barplot(frecuencia_Relativa, 
+        main =paste0("Diagrama de Frecuencia Relativa de la Variable ",nombres[i]," (%)"),
+        col=color)
+    
+    # Grafico Circular
+    nompie <- paste(nombres,round(frecuencia,3),sep=" ") # etiquetas pie
+    pie(frecuencia,
+        labels = paste0(frecuencia," datos =",round(100*frecuencia/sum(frecuencia),2),"%"),
+        col=color,
+        border = "blue",  # Color del borde de las porciones
+        density = 80,
+        init.angle=0, # Ángulo inicial
+        angle = 45, # Ángulo de inclinación de las etiquetas
+        main=paste0("Diagrama Circular de la Variable ",nombres[i]))
+    }
+  }
+```
+
+
+
+```{r}
+# calculo de cuartiles
+resul<-Calc(datos_csv,c(8,9,10))
+```
+
+# Pregunta 3
+
+<p align="justify">
+Bajar el archivo Supermercados y calcular el indice de concentración
+de Lorentz por cada variable.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Supermercados.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("G:/R IMCA/TAREA 4/DESCARGA_DATA/Supermercados.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv,n=15)
+```
+
+<p align="justify">
+Para calcular la curva de Lorenz se tiene primero ordenar los datos de menor a 
+mayor. Luego calculamos la fracción acumulada de los datos y la fracción acumulada
+de la población. Después, creamos una matriz con las coordenadas de la curva de 
+Lorenz. Calculamos el área bajo la curva de Lorenz y el área bajo la línea de
+igualdad, y finalmente obtenemos el índice de Gini dividiendo la diferencia entre
+estas dos áreas por el área bajo la línea de igualdad. Este valor es el índice 
+de concentración de Lorenz o el coeficiente de Gini.
+</p> 
+
+
+```{r}
+
+  df<-datos_csv
+  columna<-c(2,3)
+  nombres<-names(df)
+  for(i in 1:length(columna)){
+    cat("########  CALCULO DE INDICE CONCENTRACION DE LORENTZ DE LA VARIABLE ",nombres[columna[i]],"  ##########\n")
+    datos<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    
+    #Ordena los datos de menor a mayor
+    datos_ordenados <- sort(datos)
+    cat("Datos Ordenados\n")
+    print(datos_ordenados)
+    
+    # Calcula la fracción acumulada de datos
+    cat("\nDatos Acumulados\n ")
+    print(cumsum(datos_ordenados))
+    fraccion_acumulada <- cumsum(datos_ordenados) / sum(datos_ordenados)
+    fraccion_acumulada<-c(0,fraccion_acumulada)
+    
+    cat("\nDistribucion Acumulada de los datos(qc)\n ")
+    print(fraccion_acumulada)
+    
+    # Calcula la fracción acumulada de los pesos
+    fraccion_pesos <- seq(0, 1, length.out = length(datos_ordenados)+1)
+    cat("\nDistribucion de pesos(pc)\n")
+    print(fraccion_pesos)
+    
+    # Crea una matriz con las coordenadas de la curva de Lorenz
+    cat("\nMatriz con coordenadas de la curva de Lorenz\n")
+    lorenz_matriz <- cbind(fraccion_pesos, fraccion_acumulada)
+    print(lorenz_matriz)
+    
+    # Calcula el área bajo la curva de Lorenz usando el método del trapecio
+    area_lorenz<-sum(diff(lorenz_matriz[,1])*(lorenz_matriz[-1,2]+lorenz_matriz[-nrow(lorenz_matriz),2])/2)
+    cat("\nArea bajo la curva Lorenz:",area_lorenz,"\n")
+
+    # Calcula el área bajo la línea de igualdad
+    cat("\nArea bajo la linea de Igualdad:",area_igualdad <- 0.5,"\n")
+    
+    # Calcula el índice de concentración de Lorenz (coeficiente de Gini)
+    indice_gini <- (area_igualdad - area_lorenz) / area_igualdad
+    
+    # Muestra el resultado
+    cat("\nIndice de concentracion Lorenz:",indice_gini,"\n")
+    
+    color<-sample(1:8,2,replace=FALSE)
+    plot(fraccion_pesos, fraccion_acumulada,
+         main= eval(paste0("Curva de Lorenz de la variable ",nombres[columna[i]])),
+         cex.main=1.5,
+         font.main=2,
+         col.main=sample(1:10,1,replace=FALSE),
+         xlim=c(0,1),
+         xlab = "Pesos Acumulados % (pc)", 
+         ylab = "Datos Acumulados % (qc)",
+         lwd=1,col =color[1] , type = "o")
+    
+    curve(x*1,add=TRUE,lwd=1,col=color[2],type="l")
+    points(fraccion_pesos,fraccion_pesos, col = sample(1:10,1,replace=FALSE))
+    
+  }
+  
+
+```
+
+
+# Pregunta 4
+
+<p align="justify">
+Bajar el archivo Czechoslovakia.csv desde internet utilizando la 
+dirección http://www.camiz.it/sergio/Universita/Dati/ y cargar-lo en R. 
+Trata-se de 25 clases de personas con diferente nivel de renta.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Czechoslovakia.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("G:/R IMCA/TAREA 4/DESCARGA_DATA/Czechoslovakia.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv,n=15)
+```
+
+
+
+
+
+# Pregunta 5
+
+<p align="justify">
+Calcular el índice de concentración de Lorentz, adaptando el cálculo 
+considerando que en este caso, las unidades de cada grupos de 
+ingresos en la primera columna, con números indicados en la 
+segunda, tienen un ingreso promedio como indicado en la tercera.
+</p>
+<br>
+
+
+
+
+```{r}
+    # Carga de la data original
+    df<-datos_csv
+    columna<-c(1,2,3)
+    nombres<-names(df)
+  
+    #Manipulando en dataframe para el calculo de la curva
+    df[1]<-eval(parse(text = paste0("as.double(df[,",columna[1],"])*","as.double(df[,",columna[2],"])")))
+    df[2]<-eval(parse(text = paste0("as.double(df[,",columna[3],"])")))
+    colnames(df)<-c(paste0(nombres[1],"*",nombres[2]),nombres[3],nombres[3])
+    i=1;
+   
+    # CALCULO DE INDICE CONCENTRACION DE LORENTZ
+    datos<-eval(parse(text = paste0("df[,",columna[i+1],"]")))
+    
+    # Calcula la fracción acumulada de datos
+    print("Datos Acumulados",quote = FALSE)
+    print(cumsum(datos))
+    fraccion_acumulada <- cumsum(datos) / sum(datos)
+    fraccion_acumulada<-c(0,fraccion_acumulada)
+    print("Distribucion Acumulada de los datos(qc) ",quote = FALSE)
+    print(fraccion_acumulada)
+    
+    # Calcula la fracción acumulada de los pesos
+    datos2<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    print(cumsum(datos2))
+    fraccion_pesos <- cumsum(datos2) / sum(datos2)
+    fraccion_pesos<-c(0,fraccion_pesos)
+    print("Distribucion de pesos(pc)",quote = FALSE)
+    print(fraccion_pesos)
+    
+    # Crea una matriz con las coordenadas de la curva de Lorenz
+    print("Matriz con coordenadas de la curva de Lorenz",quote = FALSE)
+    lorenz_matriz <- cbind(fraccion_pesos, fraccion_acumulada)
+    print(lorenz_matriz)
+    
+    # Calcula el área bajo la curva de Lorenz usando el método del trapecio
+    area_lorenz<-sum(diff(lorenz_matriz[,1])*(lorenz_matriz[-1,2]+lorenz_matriz[-nrow(lorenz_matriz),2])/2)
+    print(paste("Area bajo la curva Lorenz:",area_lorenz),quote = FALSE)
+
+    # Calcula el área bajo la línea de igualdad
+    area_igualdad <- 0.5
+    print(paste("Area bajo la linea de Igualdad:",area_igualdad),quote = FALSE)
+    
+    # Calcula el índice de concentración de Lorenz (coeficiente de Gini)
+    indice_gini <- (area_igualdad - area_lorenz) / area_igualdad
+    
+    # Muestra el resultado
+    print(paste("Indice de concentracion Lorenz:",indice_gini),quote = FALSE)
+    
+    #Ploteo de resultados
+    color<-sample(1:8,2,replace=FALSE)
+    plot(fraccion_pesos, fraccion_acumulada,
+         main= eval(paste0("Curva de Lorenz de la variable ",nombres[columna[i+1]])),
+         cex.main=1.5,
+         font.main=2,
+         col.main=sample(1:10,1,replace=FALSE),
+         xlim=c(0,1),
+         xlab = "Pesos Acumulados % (pc)", 
+         ylab = "Datos Acumulados % (qc)",
+         lwd=1,col =color[1] , type = "o")
+    
+    curve(x*1,add=TRUE,lwd=1,col=color[2],type="l")
+    points(fraccion_pesos,fraccion_pesos, col = sample(1:10,1,replace=FALSE))
+    
+```  
+
+
+
+# Pregunta 6
+
+
+<p align="justify">
+Bajar el archivo Iris: trata-se de cuatro mediciones sobre 150 flores 
+de Iris de tres especies diferentes. Calcular promedio, varianza, 
+desvío estándar, coeficiente de variación y desvío promedio por 
+todos los caracteres cuantitativos.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("G:/R IMCA/TAREA 4/DESCARGA_DATA/Iris.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv,n=15)
+```
+
+<br>
+<p align="justify">
+Observamos de las 6 variables, 5 son variables numericas y una es variable 
+categorica. Se paras ha hacer las estadisticas correspondiente a la variable 
+numericas.
+</p>
+
+
+```{r, echo=TRUE}
+#Caculo de las estadisticas de las 6 variables 
+#Estad(datos_csv,c(1,2,3,4,5))
+```
+
+```{r}
+  df<-datos_csv
+  columna<-c(1,2,3,4,5)
+  nombres<-names(df)
+  
+
+  for(i in 1:length(columna)){
+    cat("\n\n###################  ESTADISTICA DE LA VARIABLE",nombres[columna[i]],"  #######################\n")
+    datos<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    
+    # Calcular el media de la columna i
+    cat("\n------------------ Promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    promedio_columna <- mean(datos)
+    cat("Promedio: ",promedio_columna)
+    
+    # Calculo de la varianza de los datos
+    cat("\n------------------ Varianza de la Variable",nombres[columna[i]],"-------------------\n")
+    varianza <- var(datos)
+    cat("Varianza: ",varianza)
+    
+    # Calcular la desviación estándar de los datos
+    cat("\n-------------- Desviacion Standar de la Variable",nombres[columna[i]],"-------------------\n")
+    desviacion_estandar <- sd(datos)
+    cat("Desv Standar: ",desviacion_estandar)
+    
+    # Calcular la desviación promedio
+    cat("\n-------------- Desviacion promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    # Calcular las diferencias absolutas entre los datos y la media
+    diferencias_absolutas <- abs(datos - promedio_columna)
+    desvio_promedio <- mean(diferencias_absolutas)
+    cat("Desviacion promedio: ",desvio_promedio)
+    
+    # Impresion de coeficiente de variacion
+    cat("\n------------- Coeficiente de Variacion de la Variable",nombres[columna[i]],"-------------------\n")
+    sigma<-eval(parse(text = paste0("sd(df[,",columna[i],"])")))
+    mu<-eval(parse(text = paste0("mean(df[,",columna[i],"])")))
+    cv <- sigma / abs(mu)
+    cat("Coef Variacion: ",cv)
+    }
+```
+
+
+# Pregunta 7
+
+<p align="justify">
+Intentar de construir una función que calcule todas las estadísticas y 
+aplicarla en seguida. 
+</p>
+<br>
+
+<p align="justify">
+A continuacion definimos le funcion que nos ayudara calcular el promedio, 
+varianza, desvío estándar, coeficiente de variación y desvío promedio por todos
+los caracteres. La funcion recivira como parametros una dataframe y un vector de
+las variables que se esta requiriendo la estadistica.
+</p>
+
+```{r}
+Estad<-function(df,columna){
+  nombres<-names(df)
+  for(i in 1:length(columna)){
+    cat("\n\n###################  ESTADISTICA DE LA VARIABLE",nombres[columna[i]],"  #######################\n")
+    datos<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    
+    # Calcular el media de la columna i
+    cat("\n------------------ Promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    promedio_columna <- mean(datos)
+    cat("Promedio: ",promedio_columna)
+    
+    # Calculo de la varianza de los datos
+    cat("\n------------------ Varianza de la Variable",nombres[columna[i]],"-------------------\n")
+    varianza <- var(datos)
+    cat("Varianza: ",varianza)
+    
+    # Calcular la desviación estándar de los datos
+    cat("\n-------------- Desviacion Standar de la Variable",nombres[columna[i]],"-------------------\n")
+    desviacion_estandar <- sd(datos)
+    cat("Desv Standar: ",desviacion_estandar)
+    
+    # Calcular la desviación promedio
+    cat("\n-------------- Desviacion promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    # Calcular las diferencias absolutas entre los datos y la media
+    diferencias_absolutas <- abs(datos - promedio_columna)
+    desvio_promedio <- mean(diferencias_absolutas)
+    cat("Desviacion promedio: ",desvio_promedio)
+    
+    # Impresion de coeficiente de variacion
+    cat("\n------------- Coeficiente de Variacion de la Variable",nombres[columna[i]],"-------------------\n")
+    sigma<-eval(parse(text = paste0("sd(df[,",columna[i],"])")))
+    mu<-eval(parse(text = paste0("mean(df[,",columna[i],"])")))
+    cv <- sigma / abs(mu)
+    cat("Coef Variacion: ",cv)
+    }
+}
+```
+
+
+```{r}
+#Caculo de las estadisticas de las 6 variables 
+Estad(datos_csv,c(1,2,3,4,5))
+```
+
+# Pregunta 8
+
+<p align="justify">
+Bajar el archivo Linnerud en un cualquier formado. Trata-se de 20 
+atletas de un gimnasio con tres mediciones físicas: Peso, Cintura y 
+Pulsaciones, y tres resultados de ejercicios: Tracciones, Flexiones y 
+Saltos.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Linnerud.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra los primeros 
+15 valores de la tabla.
+</p> 
+
+
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("G:/R IMCA/TAREA 4/DESCARGA_DATA/Linnerud.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv,n=15)
+```
+
+<br>
+<p align="justify">
+Observamos que las 7 variables son numericas, las cuales ser hara la estadistica 
+correspondiente.
+</p>
+
+# Pregunta 9
+
+<p align="justify">
+Calcular promedio, varianza, desvío estándar, coeficiente de 
+variación y desvío promedio por todos los caracteres.
+</p>
+<br>
+
+<p align="justify">
+A continuacion definimos le funcion que nos ayudara calcular el promedio, 
+varianza, desvío estándar, coeficiente de variación y desvío promedio por todos
+los caracteres. La funcion recivira como parametros una dataframe y un vector de
+las variables que se esta requiriendo la estadistica.
+</p>
+
+```{r}
+Estad<-function(df,columna){
+  nombres<-names(df)
+  for(i in 1:length(columna)){
+    cat("\n\n\n###################  ESTADISTICA DE LA VARIABLE",nombres[columna[i]],"  #######################\n")
+    datos<-eval(parse(text = paste0("df[,",columna[i],"]")))
+    
+    # Calcular el media de la columna i
+    cat("\n------------------ Promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    promedio_columna <- mean(datos)
+    cat("Promedio: ",promedio_columna)
+    
+    # Calculo de la varianza de los datos
+    cat("\n\n------------------ Varianza de la Variable",nombres[columna[i]],"-------------------\n")
+    varianza <- var(datos)
+    cat("Varianza: ",varianza)
+    
+    # Calcular la desviación estándar de los datos
+    cat("\n\n-------------- Desviacion Standar de la Variable",nombres[columna[i]],"-------------------\n")
+    desviacion_estandar <- sd(datos)
+    cat("Desv Standar: ",desviacion_estandar)
+    
+    # Calcular la desviación promedio
+    cat("\n\n-------------- Desviacion promedio de la Variable",nombres[columna[i]],"-------------------\n")
+    # Calcular las diferencias absolutas entre los datos y la media
+    diferencias_absolutas <- abs(datos - promedio_columna)
+    desvio_promedio <- mean(diferencias_absolutas)
+    cat("Desviacion promedio: ",desvio_promedio)
+    
+    # Impresion de coeficiente de variacion
+    cat("\n\n------------- Coeficiente de Variacion de la Variable",nombres[columna[i]],"-------------------\n")
+    sigma<-eval(parse(text = paste0("sd(df[,",columna[i],"])")))
+    mu<-eval(parse(text = paste0("mean(df[,",columna[i],"])")))
+    cv <- sigma / abs(mu)
+    cat("Coef Variacion: ",cv)
+    }
+}
+```
+<br>
+<p align="justify">
+Pasamos a Calular las estadisticas para las 7 variables.
+</p>
+
+```{r}
+#Caculo de las estadisticas de las 7 variables 
+Estad(datos_csv,c(1:7))
+```
+
+
+
+
