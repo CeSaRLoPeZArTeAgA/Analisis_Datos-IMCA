@@ -1,0 +1,436 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 6 - Relaciones entre Variables Cualitativo y uno cuantitativo"
+author: "Por: César Omar López Arteaga"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# Pregunta 1
+
+<p align="justify">
+Bajar el archivo Clase_6.R
+</p>
+<br>
+
+
+
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r}
+# Carga de la data Iris
+iris<- read.csv("G:/R IMCA/TAREA 6/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(iris)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris,n=10)
+
+```
+
+
+```{r}
+#Total de observaciones de la variable 1
+n_t = length(iris[,1])
+
+#Media de las observaciones de la variable 1
+m_t = mean(iris[,1])
+
+#Varianza de las observaciones de la variable 1
+v_t = var(iris[,1])*(n_t-1)/n_t
+
+#Desviacon Standar de las observaciones de la variable 1
+s_t = sqrt(v_t)
+
+#Coeficiente de variacion de las observaciones de la variable 1
+cvt = s_t/m_t
+
+#Agrupamiento de las estadisticas totales
+total=rbind(n_t,m_t,v_t,s_t,cvt)
+
+#Estadisticas por varible categorica (Variable 5)
+n_unit=table(iris[,5])
+
+#MEdia por categorica (Variable 5)
+mean=tapply(iris[,1],iris[,5],mean)
+
+#Varianza por categorica (Variable 5)
+var=tapply(iris[,1],iris[,5],var)
+var=var*(n_unit-1)/n_unit
+
+#Desviacion Standar por categorica (Variable 5)
+stdev=sqrt(var)
+cv=stdev/mean
+
+#Agrupamiento de las estadisticas parciales por variable categorica
+brk=rbind(n_unit,mean,var,stdev,cv)
+
+#Agrupamiento de la estadisticas por categoria (Var 5) contra la estadistica global(var 1)
+brtot=cbind(brk,total)
+colnames(brtot) = c(colnames(brk),"total")
+brtot
+
+#La razón de correlación se puede calcular en dos maneras bajo esta tabla
+e = sum(n_unit*(mean-m_t)^2) / (n_t*v_t) ; e
+e = (n_t*v_t-sum(n_unit*var))/(n_t*v_t) ; e
+boxplot(iris[,1]~iris[,5])
+
+#calcular la covarianza entre dos caracteres x y y,
+cov(iris[,2],iris[,1])
+
+#covarianza de toda la tabla, cruzando variable sin modificacion
+cov(iris[,1:4])
+
+#covarianza de toda la tabla, cruzando variable CON modificacion
+cov(iris[,1:4])*(n_t-1)/n_t
+
+#Calculo de correlacion de dos variables
+cor(iris[,1],iris[,4])
+
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(iris[,1:4])
+
+#Matriz de Correlaciones total
+plot(iris[,2:5], main="Matriz de Correlaciones ")
+
+#Correlacion entre Sepal.length y iris$Sepal.width
+plot(iris$Sepal.length,iris$Sepal.width,main="Correlacion entre Sepal.length y Sepal.width")
+
+#Correlacion entre Petal.length y Petal.width
+plot(iris$Petal.length,iris$Petal.width,main="Correlacion entre Petal.length y Petal.width")
+
+#Correlacion entre Sepal.length y iris$Sepal.width
+plot(iris$Sepal.length,iris$Petal.length,main="Correlacion entre Sepal.length y Petal.length")
+
+
+#Coreelacion Sperman
+cor(iris[,1:4],method="spearman")
+
+
+```
+
+
+<p align="justify">
+De matrix de correlaciones observamos que entre las variables Sepal.length y Petal.length
+tiene un coeficiente correlacion de 0.871758 el cual nos indica que estan fuertemente relaciones y del ploteo se observa que podria usar un k-mean. Entre las variables Petal.length y Petal.width se observa que la correlacion es de 0.9628654  el cual tambien indica que estan fuertemente relacionados estas variables y del grafico se observa que podria la data agruparse en dos y en cada una hacer una regresion lineal
+</p> 
+
+
+# Pregunta 2
+
+<p align="justify">
+Bajar el archivo Crop en R. Tratase de producción (Yield) 
+dependiendo de tres fertilizantes (Fertilizer). Construir una tabla 
+breakdown y calcular la razón de correlación empírica.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Crop.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r, eval=TRUE}
+datos<- read.csv("G:/R IMCA/TAREA 6/DESCARGA_DATA/Crop.csv")# datos
+```
+
+
+```{r,eval=TRUE}
+# Verificar la estructura de los datos
+str(datos)
+```
+
+
+```{r,eval=TRUE}
+# Visualizar los primeros registros de los datos
+head(datos,n=10)
+```
+
+<p align="justify">
+De la revison de la data se observa que la variable Fertilez es de tipo "int", el 
+cual sera conveniente pasarlo a variable categorica. 
+</p> 
+
+
+```{r}
+#conversion de variable string a variable categorica
+datos$Fertilizer <- factor(datos$Fertilizer)
+
+#mostrando la estructura de la dataframe con la variable categorica nueva
+str(datos)
+
+#mostrando la tabla luego de la transformacion
+head(datos)
+```
+
+<p align="justify">
+Al pasar la variable Fertilizer a categorica se observa tres niveles. La varible 
+independiente sera Yield el cual es de tipo "numeric".
+</p> 
+
+```{r,eval=TRUE}
+# Calculo de la tabla de breakdown y la razón empírica de correlación
+
+#Para acceder directamente a las columnas de dato
+attach(datos)
+
+#estadísticas totales
+vec<-Yield
+
+#creacion de lista vacia
+res <- list()
+  
+#creacion del nombre de la columnma
+res$name <- deparse(substitute(Yield))
+
+#creacion de los cuantiles
+res$cuantiles <- quantile(vec,c(.01,.05,.25,.50,.75,.95,.99),type=1)
+
+# número de unidades
+n<-length(vec)     
+
+# Promedio
+m<-sum(vec)/n 
+
+# varianza
+s2<- (sum((vec-m)^2))/n
+
+# desvio estandar
+s<-sqrt(s2)                 
+  
+# coeficiente de variación
+cv<-s/m                   
+
+# desvío promedio  
+sm<-(sum(abs(vec-m)))/n
+
+# resultados
+stat<- cbind(n,m,s2,s,cv,sm)
+
+#Etiquetas de las filas
+colnames(stat)<- c("n_units","Promedio","Varianza","Desv.Estandar.","Coef.Variacion","Desv.Promedio")
+
+# vector de estadísticas
+res$estadisticas <- stat                      
+  
+#Selida en tablas de la estadistica de la 
+total<- t(res$estadisticas)
+colnames(total)<- "Yield"
+
+# Estadistica por cada variable categorica
+sst<- total[1]*total[3]
+n_unit<-table(Fertilizer)
+nm<-length(n_unit)
+mean<-tapply(Yield,Fertilizer,mean) 
+var<-tapply(Yield,Fertilizer,var)*(n_unit-1)/n_unit
+stdev<-sqrt(var)
+cv<-stdev/mean
+brk<-rbind(n_unit,mean,var,stdev,cv)
+brtot<-cbind(brk,total[1:5])
+colnames(brtot) <- c(colnames(brk),"total")
+res$breakdown    <- brtot
+# razón empírica de correlación
+e<-(sst-sum(n_unit*var))/sst
+res$correlation_ratio<-e
+```
+
+```{r}
+#Salida Resultado
+print("Tabla de Breakdown")
+print(res$breakdown)
+cat("Razon de correlacion=",res$correlation_ratio)
+```
+
+<p align="justify">
+De la razon de correlacion de 0.1446349, se observa que el valor es muy bajo, esto quiere decir
+que al usar todas las variables simultaneamente no es conveniente.
+</p>
+
+<br>
+
+
+
+
+# Pregunta 3
+
+<p align="justify">
+Calcular la matriz de correlación entre las variables de Linnerud.
+</p>
+<br>
+
+```{r}
+# trabajamos con Linnerud
+data <- read.csv("G:/R IMCA/TAREA 6/DESCARGA_DATA/Linnerud.csv",header = TRUE, row.names = 1)
+
+#mostrando la estructura de la dataframe con la variable categorica nueva
+str(data)
+
+#mostrando la tabla luego de la transformacion
+head(data)
+       
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(data[,1:6])
+
+#Matriz de Correlaciones total
+plot(data[,1:6], main="Matriz de Correlaciones ")
+```
+
+<p align="justify">
+De la matrix de correlacion vemos que las variable con mayor correlacion son:
+</p>
+
+- Peso - Cintura con r=0.8702435
+- Lanzamientos - Flexiones con r=0.6957274
+- Flexiones - Saltos con r=0.66920608
+
+<br>
+
+<p align="justify">
+De la matrix de correlacion vemos que las variable con menor correlacion son:
+</p>
+
+- Saltos - Pulsaciones con r=0.03493306
+- Lanzamientos - Pulsaciones con r=0.15064802
+
+
+# Pregunta 4
+
+<p align="justify">
+Hacer un plot de las variables máximamente y mínimamente correladas.
+</p>
+<br>
+
+
+<p align="justify">
+Se graficara primero las relaciones de correlacion maximas las cuales son:
+</p>
+
+* [1] Peso - Cintura
+* [2] Lanzamientos - Flexiones
+* [3] Flexiones - Saltos
+
+
+```{r}
+
+#Correlacion entre Peso y Cintura
+plot(data$Peso,data$Cintura,main="[1] Correlacion entre Peso y Cintura, r=0.8702435")
+
+#Correlacion entre Lanzamientos y Flexiones
+plot(data$Lanzamientos,data$Flexiones,main="[2] Correlacion entre Lanzamientos y Flexiones, r=0.6957274")
+
+#Correlacion entre Flexiones y Saltos
+plot(data$Flexiones,data$Saltos,main="[3] Correlacion entre Flexiones y Saltos, r=0.66920608")
+
+```
+
+<p align="justify">
+Se graficara primero las relaciones de correlacion maximas las cuales son:
+</p>
+
+* [4] Saltos - Pulsaciones
+* [5] Lanzamientos - Pulsaciones
+
+```{r}
+#Correlacion entre Saltos y Pulsaciones
+plot(data$Saltos,data$Pulsaciones,main="[4] Correlacion entre Saltos y Pulsaciones, r=0.03493306")
+
+#Correlacion entre Lanzamientos y Pulsaciones
+plot(data$Lanzamientos,data$Pulsaciones,main="[5] Correlacion entre Lanzamientos y Pulsaciones, r=0.15064802")
+```
+
+
+
+# Pregunta 5
+
+<p align="justify">
+Bajar el archivo Marks_Ranks.csv. Tratase de notas de alumnos en 
+Inglés y Matemática y rangos correspondientes. Calcular por cada 
+pareja (Inglés, Matemática) de notas y de rangos las correlaciones de 
+Pearson y de Spearman y comparar.
+</p>
+<br>
+
+<p align="justify">
+Se inicia instalando el paquet "rio", luego de ello se cargara la liberia correpondiente.
+Se descargara el archivo en una carpeta local, luego de eso leera el archivo en "datos", para
+hacer el analisis exploratorio.
+</p>
+
+```{r,eval=FALSE}
+# Instalar la biblioteca rio si aún no está instalada
+install.packages("rio",repos = "https://cloud.r-project.org/")
+```
+
+```{r}
+# Cargar la biblioteca rio
+library(rio)
+```
+
+
+```{r}
+# Leer datos desde un archivo Marks_Ranks.csv
+datos<- import("G:/R IMCA/TAREA 6/DESCARGA_DATA/Marks_Ranks.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos,n=15)
+```
+
+
+<p align="justify">
+De la tabla se observa que el valor de la pareja de variables *(M_English M_Maths)*
+esta referida los rangos del curso de ingles y matematica y la pareja de *(R_English R_Maths)* esta referida a las notas de ingles y matematica
+</p> 
+
+
+```{r}
+#Correlacion de Pearson
+a<-cor(datos$M_English,datos$M_Maths,method = "pearson")
+b<-cor(datos$R_English,datos$R_Maths,method = "pearson")
+```
+
+```{r}
+c<-cor(datos$M_English,datos$M_Maths,method ="spearman" )
+d<-cor(datos$R_English,datos$R_Maths,method ="spearman")
+```
+
+```{r}
+#Inicializcion del dataframe de resultados de las correlaciones
+df<-as.data.frame(matrix(0,nrow = 2,  ncol=2))
+rownames(df)<-c("( M_English - M_Maths )","( R_English - R_Maths )")
+colnames(df)<-c("Pearson","spearman")
+df[1,1]<-a
+df[2,1]<-b
+df[1,2]<-c
+df[2,2]<-d
+print(df)
+```
+<p align="justify">
+Se observa que la correlacion entre las variables *R_English y R_Maths*, para el metodo 
+Pearson y Sperman son iguales a 0.6686961. Para la variable *M_English y M_Maths* el coeficiente de Person es 0.8005387 y el coeficiente de Spearmen es 0.6686961, en este caso el coeficiente de Spearmen trabaja sobre asignacion rangos de los datos y luego a esta data transformada se le aplica el coeficiente de Sperman. Para el casolas variables *M_English y M_Maths*  ya las variables estan en rango, por lo que al aplicarle el coefiente de Pearson ya estaria dando 0.8005387 el cual por definicion ya es el coeficiente de Sperman; el otro lado ha asignado nuevos rangos, lo cual es incorrecto, por eso sale un mal indice.
+</p> 
+
+
