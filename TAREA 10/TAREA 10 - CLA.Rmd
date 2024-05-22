@@ -1,0 +1,375 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 10 - Algebra Lineal - Cambio de bases"
+author: "Por: César Omar López Arteaga"
+date: "Abril 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# PREGUNTA 1
+<p align="justify">
+En Rstudio/Rmarkdown definir dos bases B y C, diferentes de la base canónica con 2,3, y 4 dimensiones.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para ver la definicion es conveniente ver la matriz de estos vectores base no canonicos, el cual seran de dimension 2,3,4.
+Se generara dos bloques de bases B y C, diferentes de la base canónica con dimension 2,3, y 4.
+</p>
+
+```{r}
+#Ggeneracion de Base B de dimension 2,3,4
+B <- list()
+#Establecer semilla para reproducibilidad
+set.seed(123)  
+
+for(i in 2:4){
+  B <- append(B,list(matrix(rnorm(i*i), nrow = i)))  # Generar matriz aleatoria de dimensión ixi
+}
+#impresion de las matrices base de B
+for(i in 2:4){
+  cat("Matriz B dim ",i,"x",i,":\n")
+  print(B[i-1])
+}
+```
+
+
+
+```{r}
+#Ggeneracion de Base C de dimension 2,3,4
+#creacion de la lista vacia
+C <- list()
+#Establecer semilla para reproducibilidad
+set.seed(253)  
+
+for(i in 2:4){
+  C <- append(C,list(matrix(rnorm(i*i), nrow = i)))  # Generar matriz aleatoria de dimensión ixi
+}
+#impresion de las matrices base de B
+for(i in 2:4){
+  cat("Matriz C dim ",i,"x",i,":\n")
+  print(C[i-1])
+}
+```
+
+
+
+# PREGUNTA 2
+<p align="justify">
+Averiguar que se trate de bases y no solo de generadores de subespacios.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para determinar si una matriz genera todo el espacio en una matriz, necesitamos 
+verificar si sus vectores son linealmente independientes. Podemos hacer esto 
+calculando el rango de la matriz.Pqara ello usaremos la funcion $qr$ con el
+parametro $rank$ el cual nos calculara el ranggo de cualquier matriz.
+</p>
+<br>
+
+
+```{r}
+for(i in 2:4){
+  cat("Matriz B dim",i,"x",i,"")
+  print(B[i-1])
+  cat("Calculo del rango de la matriz B (dim",i,"x",i,")=",qr(B[[i-1]])$rank,"\n\n")
+}
+```
+
+```{r}
+for(i in 2:4){
+  cat("Matriz C dim",i,"x",i,"")
+  print(C[i-1])
+  cat("Calculo del rango de la matriz C (dim",i,"x",i,")=",qr(C[[i-1]])$rank,"\n\n")
+}
+```
+
+# PREGUNTA 3
+<p align="justify">
+Calcular la matriz de pasaje de B a C y de C a B.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Supongamos que tenemos las coordenadas de los vectores de la base $B$ y de la base $C$ 
+como columnas de las matrices $B$ y $C$ respectivamente
+</p>
+
+<p align="justify">
+Podemos calcular la matriz de pasaje $P_{BC}$ de la base $B$ a la base $C$ utilizando la fórmula:
+</p>
+
+$$P_{BC}=C.B^{-1}$$
+<p align="justify">
+Donde $B^{-1}$ es la inversa de la matriz $B$ y $C.B^{-1}$ representa la multiplicación 
+de la matriz $C$ por la inversa de la matriz $B$.
+</p>
+
+
+```{r,eval=TRUE}
+#creacion de la lista vacia de la matriz de pasaje de B a C
+P_BC <- list()
+
+for(i in 2:4){
+  # Multiplicación de C por la inversa de B
+  #P_BC <- C[i-1] %*% solve(B[i-1])   
+  P_BC <- append(P_BC,list(C[[i-1]] %*% solve(B[[i-1]])))  
+}
+#impresion de las matrices base de B
+for(i in 2:4){
+  cat("Matriz pasaje Pbc dim(",i,"x",i,"):\n")
+  print(P_BC[i-1])
+}
+
+```
+
+
+
+<p align="justify">
+Analogamente se calcula la matriz de pasaje de C a B como: 
+</p>
+
+$$P_{CB}=B.C^{-1}$$
+<p align="justify">
+Donde $C^{-1}$ es la inversa de la matriz $C$ y $B.C^{-1}$ representa la multiplicación 
+de la matriz $B$ por la inversa de la matriz $C$.
+</p>
+
+
+```{r,eval=TRUE}
+#creacion de la lista vacia de la matriz de pasaje de C a B
+P_CB <- list()
+
+for(i in 2:4){
+  # Multiplicación de B por la inversa de C
+  #P_BC <- C[i-1] %*% solve(B[i-1])   
+  P_CB <- append(P_CB,list(B[[i-1]] %*% solve(C[[i-1]])))  
+}
+#impresion de las matrices base de B
+for(i in 2:4){
+  cat("Matriz pasaje Pcb dim(",i,"x",i,"):\n")
+  print(P_CB[i-1])
+}
+```
+
+
+
+
+# PREGUNTA 4
+<p align="justify">
+Definir dos vectores con respecto a B, luego calcular su componentes con respecto a C.
+</p>
+<br>
+
+**Solucion**
+
+Definimos dos vectores de dimension $1x3$, el cual estara en la base $B$ y la pasaremos a la 
+base $C$
+
+
+```{r}
+#pasando de la base B a la C los vectores de dimension 1x3, con la matirz de pasaje P_BC
+for(i in 1:1){
+  cat("Pasando una matriz v(dim 1x3) en la base B a la C, con la matirz de pasaje P_BC\n")
+  v1<-c(2,1,2)
+  v1_b<-B[[2]]%*%v1
+  v1_c<-as.vector(P_BC[[2]]%*%v1_b)
+  v1_cc<-C[[2]]%*%v1
+  cat("v1   = ", round(v1,3),"\n")
+  cat("v1_b = ", round(v1_b,3),"\n")
+  cat("v1_c = ", round(v1_c,3),"\n")
+  cat("v1_c = ", round(v1_cc,3),"\n\n")
+  
+  v2<-c(5,0,-2)
+  v2_b<-B[[2]]%*%v2
+  v2_c<-as.vector(P_BC[[2]]%*%v2_b)
+  v2_cc<-C[[2]]%*%v2
+  cat("v2   = ", round(v2,3),"\n")
+  cat("v2_b = ", round(v2_b,3),"\n")
+  cat("v2_c = ", round(v2_c,3),"\n")  
+  cat("v2_c = ", round(v2_cc,3),"\n")  
+}
+```
+
+# PREGUNTA 5
+<p align="justify">
+Definir una forma bilineal en 3 dimensiones y averiguar si es simétrica, definida positiva o no.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Supongamos que tenemos una forma bilineal \( f \) definida en un espacio vectorial 
+tridimensional \( \mathbb{R}^3 \). La forma bilineal toma dos vectores \( v, w \) de
+\( \mathbb{R}^3 \) y produce un valor escalar \( f(v, w) \).
+
+En R, podemos definir una forma bilineal utilizando una función que tome dos vectores
+como argumentos y devuelva el valor escalar de la forma bilineal en esos vectores.
+Por ejemplo, supongamos que tenemos la forma bilineal definida por la matriz \( A \):
+</p>
+
+
+
+\[
+f(v, w) = v^T A w
+\]
+
+donde \( A \) es una matriz de \( 3 \times 3 \).
+
+```{r}
+# Definir la matriz que representa la forma bilineal de dim 3x3
+#A <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), nrow = 3, byrow = TRUE)
+
+# Definir la matriz asociada a la forma bilineal
+#A <- matrix(c(1, 2, 1, 2, 3, 2, 1, 2, 3), nrow = 3)
+A<- matrix(c(4, 1, -1, 1, 5, 2, -1, 2, 6), nrow = 3, byrow = TRUE)
+
+# Definir la función para la forma bilineal
+forma_bilineal <- function(v, w) {
+  resultado <- t(v) %*% A %*% w
+  return(resultado)
+}
+
+# Ejemplo de uso de la forma bilineal
+for(i in 1:1){
+  v <- c(1, 2, 3)
+  w <- c(4, 5, 6)
+  print(A)
+  resultado <- forma_bilineal(v, w)  
+  cat("Vector V=",v)
+  cat("\nVector W=",w)
+  cat("\nf(v,w)=",resultado)
+}
+```
+
+<br>
+<p align="justify">
+Como tenemos la forma bilineal \( f \) definida en un espacio vectorial \( V \) sobre un campo \( K \). 
+La forma bilineal es simétrica si \( f(v, w) = f(w, v) \) para todos los vectores \( v, w \) en \( V \).
+</p>
+
+Podemos verificar si una forma bilineal es simétrica comprobando si la matriz asociada a la forma bilineal 
+es igual a su traspuesta.supongamos que tenemos la forma bilineal definida por la matriz \( A \):
+
+\[
+f(v, w) = v^T A w
+\]
+
+La forma bilineal será simétrica si \( A = A^T \).
+
+```{r}
+# Verificar si la forma bilineal es simétrica
+es_simetrica <- all(A==t(A))
+
+# Mostrar el resultado
+if (es_simetrica) {
+  print("La forma bilineal es simétrica.")
+} else {
+  print("La forma bilineal no es simétrica.")
+}
+```
+
+
+<p align="justify">
+Para determinar si una forma bilineal en tres dimensiones es definida positiva,
+se puedes utilizar la descomposición espectral de la matriz asociada a la forma 
+bilineal. Una forma bilineal simétrica f en tres dimensiones es definida positiva
+si todos los valores propios (eigenvalues) de la matriz asociada son positivos. 
+</p>
+
+
+
+```{r}
+# Calcular los valores propios de la matriz
+valores_propios <- eigen(A)$values
+valores_propios
+
+# Verificar si todos los valores propios son positivos
+definida_positiva <- all(valores_propios > 0)
+
+# Imprimir el resultado
+if (definida_positiva) {
+  print("La forma bilineal es definida positiva.")
+} else {
+  print("La forma bilineal no es definida positiva.")
+}
+
+```
+
+
+
+# PREGUNTA 6
+<p align="justify">
+Suponiendo que esta sea definida por la base C, calcular su matriz con respecto a B.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Supongamos que la matriz $A$ de la forma bilineal $f(v,w)$ esta escrita en la base $C$,
+esto es $A=A_{C}$, ahora calcularemos la matriz $A$ con respecto a la base $B$, para
+ellos calculamos:
+</p>
+
+$$A_{B}=P^{t}_{BC}.A_{C}.P_{BC} $$
+
+```{r}
+for(i in 1:1){
+  cat("Matriz asociada a la forma bilineal f(v,w) en la base C es:\n")
+  A_C<-A
+  print(A_C)
+  
+  cat("\nMatriz asociada a la forma bilineal f(v,w) en la base B es:\n")
+  A_B<-t(P_BC[[2]])%*%A_C%*%P_BC[[2]]
+  print(A_B)
+}
+
+```
+
+# PREGUNTA 7
+<p align="justify">
+Averiguar que la forma aplicada a los vectores con respecto a B sea igual a los con respecto a C.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para corroborar que la aplicacion de la forma bilineal no varia si se cambia de base, se hara uso
+de los vectores v1 y v2, calculados en el item 4, en la representacion respectiva de las bases B y C. Tambien se usara la matricez asociadas a la forma bilineal en las bases C y D.
+</p>
+
+```{r}
+for(i in 1:1){
+  print("Aplicando la forma bilineal f con respecto a la base B")
+  cat("v1_b = ", round(v1_b,3),"\n")
+  cat("v2_b = ", round(v2_b,3),"\n")
+  cat("f(v1_b,v2_b)=",t(v1_b) %*% A_B %*% (v2_b))
+  cat("\n\n")
+  
+  print("Aplicando la forma bilineal f con respecto a la base C")
+  cat("v1_c = ", round(v1_c,3),"\n")
+  cat("v2_c = ", round(v2_c,3),"\n")
+  cat("f(v1_c,v2_c)=",t(v1_c) %*% A_C %*% v2_c)
+}
+```
