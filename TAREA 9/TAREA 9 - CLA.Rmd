@@ -1,0 +1,938 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 9 - Agrupamiento Jerarquico por Hclust"
+author: "Por: César Omar López Arteaga"
+date: "Abril 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# PREGUNTA 1
+<p align="justify">
+Bajar el archivo Clase_9.R
+</p>
+<br>
+
+**Solucion**
+
+
+```{r}
+# clasificación jerarquica con hclust
+# Pero se necesita de calcular la matriz  de distancias previamente.
+
+# Carga de la data Linnerud
+dat <- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(dat)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(dat,n=10)
+
+n <- dim(dat)[1];n
+lin.dis   <- dist(dat); round(lin.dis,3)         # matriz de distancias (Euclidianas)       
+lin.clust <- hclust(lin.dis,method="ward.D2")    # jerarquía ("Ward")
+plot(lin.clust)                                  # gráfico dendrograma
+plot(lin.clust,hang=-1)                          # gráfico mejor
+lin.clust                                        
+str(lin.clust)
+# hclust brinda muchas salidas: se les vamos a salir todas
+summary(lin.clust)
+lin.clust$merge        # las parejas de nodos que se juntan
+lin.clust$height       # el nivel de junctión
+lin.clust$order        # el orden de las hojas
+lin.clust$labels       # nombres
+lin.clust$method       # método  
+lin.clust$call         # fila de llamada
+lin.clust$dist.method  # la distancia
+part <- cutree(lin.clust, k = 1:(n-1)); part  # así se hacen todas las particiones posibles 
+############################################################################################
+# elección de la partición: inicialización
+maxcl    <- n-1
+ngr      <- c((maxcl):1)
+wss      <- rep(0,maxcl)
+wssd     <- wss
+wssd2    <- wss
+##########################################################################################
+# estadísticas para el índice de la jerarquía
+indx     <- lin.clust$height                       
+Di       <- c(0,indx[2:maxcl] - indx[1:(maxcl-1)])    # diferencias índice de Ward
+Di2      <- c(0,Di[2:maxcl] - Di[1:(maxcl-1)])        # diferencias segundas
+########################################################################
+# función que calcula la suma de cuadrados centrados
+
+css <- function(data) {            # Centered sum of squares of a data.frame
+       sum(scale(data, center = TRUE, scale = FALSE)^2)
+}
+########################################################################
+# función que particiona los datos según los grupos eligidos y calcula
+# la wss correspondiente
+wrap <- function(i, hc, x) {          #  i = # of clusters, hc = hclust, x = data
+        cl  <- cutree(hc, i)          # gets the partition in i groups 
+        spl <- split(x, cl)           # splits the data in classes
+        wss <- sum(sapply(spl, css))  # computes the wss
+        wss
+}
+########################################################################
+# se aplica wrap a cada partición
+wss      <- rep(0,maxcl)
+length(wss)
+for (i in 1:maxcl) {
+  wss[i] <- wrap(i,lin.clust,dat)             # suma de cuadratos dentro
+}
+# se calculan estadísticas correspondientes
+Dw       <- -c(wss[2:maxcl] - wss[1:(maxcl-1)],0); Dw     # las dos diferencias
+Dw2      <- -c(Dw[2:maxcl] - Dw[1:(maxcl-1)],0); Dw2
+
+tss      <- wss[1]                            # suma de cuadratos total
+bss      <- tss - wss                         # suma de cuadratos entre
+# índice de Calinski-Harabász
+df1      <- c(1:(maxcl))                      # número de grupos
+df2      <- (n-c(1:maxcl))                    # número de observaciones - grupos
+CH       <- (bss/df1)/(wss/df2)               # Calinski-Harabász
+# se c onstruye la tabla de resultados
+index    <- cbind(c((maxcl):1),lin.clust$merge,indx,Di,Di2,rev(wss),rev(Dw),rev(Dw2),CH)
+rownames(index)   <- c(1:maxcl)
+colnames(index)   <- c("ngr","g1","g2","index","Dindex","D2index","wss","Dwss","Dwss2","CH")
+index
+###### gráfico del índice
+plot(c(1:maxcl),indx, type="l", xlab="Number of Clusters", ylim = c(min(indx,Di,Di2),max(indx,Di,Di2)),xaxt="n",
+     ylab="Ward's criterion index", main = "Ward index variation")
+axis(1,at=c(1:maxcl),labels=ngr)
+lines(c(1:maxcl),Di,col="blue")
+lines(c(1:maxcl),Di2,col="red")
+legend("topleft",legend=c("Ward's Index","Differences","Second differences"),col=c("black","blue","red"),lty=1)
+###### gráfico de las inercias
+plot(1:maxcl, wss, type="l", xlab="Number of Clusters", ylim = c(min(wss,Dw,Dw2),max(wss,Dw,Dw2)),xaxt="n",
+     ylab="Ward's criterion index", main = "Ward criterion, inertia variation")
+axis(1,at=c(1:maxcl),labels=1:maxcl)
+lines(1:maxcl, Dw,col="blue")
+lines(1:maxcl, Dw2,col="red")
+legend("topright",legend=c("Ward's Inertia","Differences","Second differences"),col=c("black","blue","red"),lty=1)
+###### gráfico de Calinski-Harabász
+plot(1:maxcl, CH, type="l", xlab="Number of Clusters", xaxt="n",
+     ylab="CH index", main = "Ward criterion, Calinski-Harabász index")
+axis(1,at=c(1:maxcl),labels=c(1:maxcl))
+###########################################################################################
+# estudio de una partición
+ncl    <- 4                  # por ejemplo en 4 clases, pero cuidado, pues ncl es empleado
+                             # para eligir la cuarta partición en part, ya que se han 
+                             # hechas todas con cutree. Si no, hay que encuentrar cual se
+                             # corresponde en part a ncl clases.
+parti  <- part[,ncl]; parti  # clase de cada unidad
+# para saber la lista de unidades por grupo en una partición y el promedio de las variables
+apply(dat,2,mean)
+clases = list()
+dat_clases = split(dat,parti)
+for (k in 1:ncl) {   # se buscan los nombres de las unidades
+  clases$ind[[k]] <- rownames(part)[which(part[,ncl]==k)] # identifica ls puntos,
+  clases$mean[[k]]<- apply(dat_clases[[k]],2,mean)        # cálcula los promédios
+}
+clases                                                    # lista de salida
+###### dendrograma con clases
+plot(lin.clust,hang=-1)
+rect.hclust(lin.clust,k=ncl)
+abline(h=(mean(indx[maxcl-ncl+c(1,2)])),col="red")
+#########################################################################
+# clasificación jerárquica con similitud
+# se trabaja con Ellenberg
+
+# Carga de la data Linnerud
+ell <- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Ellenberg.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(ell)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(ell,n=10)
+
+#ell <- read.csv("Ellenberg.csv",header=TRUE,row.names=1); head(ell)
+n = dim(ell)[1]
+p = dim(ell)[2]
+ell.c.sim <- matrix(0,nrow=p,p)
+# se construye la matriz de similitud entre columnas según Sorensen 
+for (i in 1:p) {
+  for (j in 1:i) {
+    if (i ==j)  {
+      ell.c.sim[i,i] <- 1
+    } else {
+      t  <- table(ell[,i],ell[,j])  # tabla de contingencia
+      a  <- t[1,1]
+      b  <- t[1,2]
+      c  <- t[2,1]
+      d  <- t[2,2]
+      so <- 2*a / (2*a + b + c)    # sorensen
+      ell.c.sim[i,j] <- so         # valores en la primera mitad
+      ell.c.sim[j,i] <- so         # también otra mitad
+    } 
+  }     
+}
+ell.c.sim
+# se transforma en disimilitud y se hace la jerarquía
+eld       <- as.dist(1-(ell.c.sim))
+ell.c.cpl <- hclust(eld,method="complete") # distancia máxima
+# gráfico del dendrograma
+plot(ell.c.cpl,hang=-0.1)
+
+ell.s.cpl <- hclust(eld,method="single")   # distancia mínima
+plot(ell.s.cpl,hang=-0.1)
+########################################################################
+# trabajamos con la máxima distancia
+maxcl    <- p-1
+wss      <- rep(0,maxcl)
+wssd     <- wss
+wssd2    <- wss
+wss      <- ell.c.cpl$height
+for (i in 1:maxcl) {
+  if (i>1) {
+    wssd[i]  <- wss[i]-wss[i-1]
+  }
+  if (i>2) wssd2[i] <- wssd[i]-wssd[i-1]
+}
+index             <- cbind(c(maxcl:1),wss,wssd,wssd2)
+rownames(index)   <- c(1:maxcl)
+colnames(index)   <- c("ngr","SSW","D","D2")
+index                                         # tabla de resultados
+plot(ell.c.cpl,hang=-0.1)                     # gráfico con clases
+rect.hclust(ell.c.cpl,k=5)                    # se dibujan rectangulos para clases
+########################################################################
+
+
+```
+
+
+
+# PREGUNTA 2
+<p align="justify">
+Con los datos de Iris, correr la clasificación jerárquica (distancia Euclideana y 
+ward.D2) con 3 grupos y con los grupos que el CH sugiere.
+</p>
+<br>
+
+**Solucion**
+
+
+<br>
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se mostrara la estructura de la data, la cual llamaremos **"iris"**, 
+luego se muestra la tabla con las primeras 10 observaciones.
+</p> 
+
+```{r,warning=FALSE}
+
+# Carga de la data Iris
+iris_bruto<- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+iris.labels<-iris_bruto$Species
+table(iris.labels)
+
+#excluyendo la columna species el cual esta en posicion 5
+iris_data <- iris_bruto[1:4]
+
+# Verificar la estructura de los datos
+str(iris_data)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris_data,n=10)
+
+#escalando la data
+#iris<-scale(iris_data)
+
+#asignacion de la data para el calculo
+iris<-iris_data
+```
+
+
+```{r}
+#calculo de la matriz de distancia euclideana
+iris.dis<-dist(iris) 
+
+# Verificar la estructura de los datos
+str(iris.dis)
+
+#matriz de distancias (Euclidianas), solo muestra los primeros 7x7 valores 
+as.matrix(iris.dis)[1:7, 1:7]
+```
+
+
+```{r, warning=FALSE}
+library(knitr)
+# Realizar el agrupamiento jerárquico con el método de Ward
+grupo <- hclust(d=iris.dis, method = "ward.D2")
+
+# Dibujar el dendrograma
+plot(grupo, main = "Dendrograma con Distancia Euclidiana y Método Ward(ward.D2)")
+rect.hclust(grupo,k=3,borde=2:5)
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+# Imprimir los grupos resultantes
+print(grupos_cortados)
+
+#creacion de la tabla t1
+t1<-table(grupos_cortados,iris.labels)
+kable(t1, caption = "Tabla Metodo Ward.D2 y distancia Euclideana",format = "markdown",align="c")
+```
+
+
+```{r}
+############################################################################################
+# elección de la partición: inicialización
+n <- dim(iris)[1]
+maxcl    <- n-1
+ngr      <- c((maxcl):1)
+wss      <- rep(0,maxcl)
+wssd     <- wss
+wssd2    <- wss
+##########################################################################################
+# estadísticas para el índice de la jerarquía
+indx     <- grupo$height                       
+Di       <- c(0,indx[2:maxcl] - indx[1:(maxcl-1)])    # diferencias índice de Ward
+Di2      <- c(0,Di[2:maxcl] - Di[1:(maxcl-1)])        # diferencias segundas
+########################################################################
+# función que calcula la suma de cuadrados centrados
+
+css <- function(data) {            # Centered sum of squares of a data.frame
+      sum(scale(data, center = TRUE, scale = FALSE)^2)
+}
+########################################################################
+# función que particiona los datos según los grupos eligidos y calcula
+# la wss correspondiente
+wrap <- function(i, hc, x) {          #  i = # of clusters, hc = hclust, x = data
+        cl  <- cutree(hc, i)          # gets the partition in i groups 
+        spl <- split(x, cl)           # splits the data in classes
+        wss <- sum(sapply(spl, css))  # computes the wss
+        wss
+}
+########################################################################
+# se aplica wrap a cada partición
+wss      <- rep(0,maxcl)
+#length(wss)
+for (i in 1:maxcl) {
+  wss[i] <- wrap(i,grupo,iris)             # suma de cuadratos dentro
+}
+# se calculan estadísticas correspondientes
+Dw       <- -c(wss[2:maxcl] - wss[1:(maxcl-1)],0)    # las dos diferencias
+Dw2      <- -c(Dw[2:maxcl] - Dw[1:(maxcl-1)],0)
+
+tss      <- wss[1]                            # suma de cuadratos total
+bss      <- tss - wss                         # suma de cuadratos entre
+# índice de Calinski-Harabász
+df1      <- c(1:(maxcl))                      # número de grupos
+df2      <- (n-c(1:maxcl))                    # número de observaciones - grupos
+CH       <- (bss/df1)/(wss/df2)               # Calinski-Harabász
+# se c onstruye la tabla de resultados
+index    <- cbind(c((maxcl):1),grupo$merge,indx,Di,Di2,rev(wss),rev(Dw),rev(Dw2),CH)
+rownames(index)   <- c(1:maxcl)
+colnames(index)   <- c("ngr","g1","g2","index","Dindex","D2index","wss","Dwss","Dwss2","CH")
+index
+
+```
+
+**Comentario**
+
+<p align="justify">
+Con los datos de Iris, al correr la clasificación jerárquica con la distancia Euclideana y 
+el metodo ward.D2, con el indice CH suguiere que la agrupacion se en cinco grupos $(CH=390.7879)$.
+</p>
+
+
+
+# PREGUNTA 3
+<p align="justify">
+Correr también la misma tabla con la distancia de Manhattan (sin CH) empleando
+métodos “single” y “complete”.
+</p>
+
+**Solucion**
+
+<p align="justify">
+Con el codigo de la parte 2, se correra la clasificacion jerarquica con los metodos
+“single” y “complete”, en ambos casos se usara la metrica Manhattan.
+</p>
+<br>
+
+-   Se inicia con los calculos previos del calculo de matriz de distancia con el metodo manhattan
+```{r}
+#calculo de la matriz de distancia manhattan
+iris.dis   <- dist(iris,method = "manhattan") 
+
+# Verificar la estructura de los datos
+str(iris.dis)
+
+#matriz de distancias (Euclidianas), solo muestra los primeros 7x7 valores 
+as.matrix(iris.dis)[1:7, 1:7]
+
+```
+<br>
+
+-   En este apartado se hace el agrupamiento jerarquico con el metodo Single
+
+```{r}
+########################### AGRUPAMIENTO CON EL METODO SINGLE Y METRICA MANHATTAN
+
+# Realizar el agrupamiento jerárquico con el método de single
+grupo <- hclust(d=iris.dis, method = "single")
+
+# Dibujar el dendrograma
+plot(grupo, main = "Dendrograma con Distancia Manhattan y Método Single")
+rect.hclust(grupo,k=3,borde=2:5)
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+#creacion de la tabla t2
+t2<-table(grupos_cortados,iris.labels)
+
+# Imprimir la tabla con título utilizando kable
+kable(t2, caption = "Tabla Metodo Single y distancia de manhattan",format = "markdown",align="c")
+
+```
+<br>
+
+-   En este apartado se hace el agrupamiento jerarquico con el metodo Complete
+
+```{r}
+########################### AGRUPAMIENTO CON EL METODO COMPLETE Y METRICA MANHATTAN
+
+# Realizar el agrupamiento jerárquico con el método de complete
+grupo <- hclust(d=iris.dis, method = "complete")
+
+# Dibujar el dendrograma
+plot(grupo, main = "Dendrograma con Distancia Manhattan y Método Complete")
+rect.hclust(grupo,k=3,borde=2:5)
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+#creacion de la tabla t2
+t3<-table(grupos_cortados,iris.labels)
+
+# Imprimir la tabla con título utilizando kable
+kable(t3, caption = "Tabla Metodo Complete y distancia de manhattan",format = "markdown",align="c")
+```
+
+
+# PREGUNTA 4
+<p align="justify">
+¿Cual es la mejor clasificación? Cuales flores están mal clasificados 
+en todas estas análisis?
+</p>
+<br>
+
+**Solucion**
+
+Para esta seccion se analizara los tres casos anteriores los cuales son:
+
+*   Clasificacion con el Metodo Ward.D2 y distancia Euclideana
+*   Clasificacion con el Metodo Single y distancia de manhattan
+*   Clasificacion con el Metodo Complete y distancia de manhattan
+
+A continuacion se pasara mostrar cada tabla y se hara un analisis de cada una:
+
+
+```{r}
+#tabla t1 impresion
+for(i in 1:1){
+cat("Tabla Metodo Ward.D2 y distancia Euclideana\n")
+print(t1)  
+}
+```
+
+<p align="justify">
+De la Tabla Metodo Ward.D2 y distancia Euclideana anterior se puede observar:
+</p>
+
+ *    Toda la especie de Setosa (n=50), estan clasificado en el cluster 1
+ *    Un gran numero de la especie Versicolor (n=49), estan clasificado en el cluster 3, uno de ellos(n=1) se ha clasificado en el clauster 2
+ *    Un gran numero de la especie Virginia (n=35) se han clasificado en el cluster 2, algunos de ellos (n=15) se han clasificado en el cluster 3
+
+<p align="justify">
+El error cometido en esta clasificacion seria de $Error1=16/150=10.66\%$
+</p>
+
+
+```{r}
+#tabla t2 impresion
+for(i in 1:1){
+cat("Tabla Metodo Single y distancia de manhattan\n")
+print(t2)  
+}
+```
+
+<p align="justify">
+De la tabla del Metodo Single y distancia de manhattan anterior se puede observar:
+</p>
+
+ *    Toda la especie de Setosa (n=50), estan clasificado en el cluster 1
+ *    Toda la especie Versicolor (n=50), estan clasificado en el cluster 2
+ *    Un gran numero de la especie Virginia (n=43) se han clasificado en el cluster 2, algunos de ellos (n=1) se han clasificado en el cluster 3
+
+<p align="justify">
+El error cometido en esta clasificacion seria de $Error2=49/150=32.66\%$
+</p>
+
+```{r}
+# tabla t3 impresion
+for(i in 1:1){
+cat("Tabla Metodo Complete y distancia de manhattan\n")
+print(t3)  
+}
+```
+ 
+<p align="justify">
+De la tabla del Metodo Complete y distancia de manhattan anterior se puede observar:
+</p>
+
+ *    Toda la especie de Setosa (n=50), estan clasificado en el cluster 1
+ *    Toda la especie Versicolor (n=50), estan clasificado en el cluster 3
+ *    Un gran numero de la especie Virginia (n=34) se han clasificado en el cluster 2, algunos de ellos (n=16) se han clasificado en el cluster 3
+
+<p align="justify">
+El error cometido en esta clasificacion seria de $Error3=16/150=10.66\%$
+</p>
+
+**Comentario**
+
+<p align="justify">
+De los errores encontrados en las tres tablas observamos que el que tiene menor error se da un empate con el metodo Ward.D2 y el metodo Complete los cuales tienen en mismo error(Error=10.66%) con lo cual la tabla t1 y t3,son el mejor clasificacion jerarquica. Se observa que en las tres clasificaciones la especie Virginia lo clasifica con errores, poniendo parte de su especie
+en un cluster indevido.
+</p>
+
+
+# PREGUNTA 5
+<p align="justify">
+Calcular la razón de correlación y su tabla de “breakdown” sobre los 
+grupos elegidos.
+</p>
+<br>
+
+**Solucion**
+
+
+<p align="justify">
+Se trabajara con el agrupamiento jerarquico con menor error, el cual corresponde al metodo Ward.D2 con metrica euclideana. Asi tenemos tenemos los tres agrupamientos que hace el algoritmo, los cuales
+pasamos a identificar segun la data original. El criterio es el siguiente:
+</p>
+
+* Grupo 1, el cual corresponde a la especie setosa
+
+* Grupo 2, el cual corresponde a la especie virginica 
+
+* Grupo 3, el cual corresponde a la especie versicolor
+
+
+```{r}
+# Carga de la data Iris
+iris_bruto<- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+iris.labels<-iris_bruto$Species
+table(iris.labels)
+
+
+#excluyendo la columna species el cual esta en posicion 5
+iris_data <- iris_bruto[1:4]
+
+#asignacion de la data para el calculo
+iris<-iris_data
+
+#calculo de la matriz de distancia euclideana
+iris.dis<-dist(iris) 
+
+# Realizar el agrupamiento jerárquico con el método de Ward
+grupo <- hclust(d=iris.dis, method = "ward.D2")
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+#creacion de la tabla t1
+t1<-table(grupos_cortados,iris.labels)
+kable(t1, caption = "Tabla Metodo Ward.D2 y distancia Euclideana",format = "markdown",align="c")
+
+#tabla t1 impresion
+for(i in 1:1){
+cat("Tabla Metodo Ward.D2 y distancia Euclideana\n")
+print(t1)  
+}
+ 
+```
+
+
+
+<p align="justify">
+Se pasara a tranformar el dataframe para que tenga las etiquetas de la clasificacion y poder ver mas detalle del agrupamiento de la data:
+</p>
+
+```{r}
+#Comparamos con la data real
+Species <- factor(grupos_cortados,levels =1:3, labels = c("setosa","virginica","versicolor"))
+iris_test <- cbind( iris_bruto[,1:4],Species)
+error <- sum(!iris_test$Species==iris_bruto[[5]])
+table(iris_test$Species,iris_bruto[[5]])
+
+# Convertir a character
+iris_test$Species <- as.character(iris_test$Species)
+
+#visualizando la estructura de la data
+head(iris_test,n=10)
+```
+
+<p align="justify">
+Se hara la tabla breakdown sobre los tres grupos resultantes de la clasificación.
+</p>
+
+
+```{r,eval=TRUE}
+
+#Total de observaciones de la variable 1
+n_t = length(iris_test[,1])
+
+#Media de las observaciones de la variable 1
+m_t = mean(iris_test[,1])
+
+#Varianza de las observaciones de la variable 1
+v_t = var(iris_test[,1])*(n_t-1)/n_t
+
+#Desviacon Standar de las observaciones de la variable 1
+s_t = sqrt(v_t)
+
+#Coeficiente de variacion de las observaciones de la variable 1
+cvt = s_t/m_t
+
+#Agrupamiento de las estadisticas totales
+total=rbind(n_t,m_t,v_t,s_t,cvt)
+
+#Estadisticas por varible categorica (Variable 5)
+n_unit=table(iris_test[,5])
+
+#MEdia por categorica (Variable 5)
+mean=tapply(iris_test[,1],iris_test[,5],mean)
+
+#Varianza por categorica (Variable 5)
+var=tapply(iris_test[,1],iris_test[,5],var)
+var=var*(n_unit-1)/n_unit
+
+#Desviacion Standar por categorica (Variable 5)
+stdev=sqrt(var)
+cv=stdev/mean
+
+#Agrupamiento de las estadisticas parciales por variable categorica
+brk=rbind(n_unit,mean,var,stdev,cv)
+
+#Agrupamiento de la estadisticas por categoria (Var 5) contra la estadistica global(var 1)
+brtot1=cbind(brk,total)
+colnames(brtot1) = c(colnames(brk),"total")
+brtot1
+
+```
+
+La razon de correlacion sera:
+
+```{r,eval=TRUE}
+#La razón de correlación se puede calcular en dos maneras bajo esta tabla
+e = sum(n_unit*(mean-m_t)^2) / (n_t*v_t) 
+cat("Razon de correlacion(e):",e)
+```
+
+Se presenta el diagrama de cajas con los datos clasificados con el algoritmo kmeans:
+```{r,eval=TRUE}
+boxplot(iris_test[,1]~iris_test[,5])
+```
+
+
+
+
+
+# PREGUNTA 6
+<p align="justify">
+Estandarizar los datos de Iris, empleando el comando
+scale(X, center=TRUE,scale=TRUE), con X el archivo Iris, 
+limitadamente a las cuatro mediciones, y re-correr las análisis (solo 
+Euclidean y ward.D2)
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para este apattado se correra la data iris, pero antes de aplicarle el agrupamiento
+jerarquico se procedera a standarizar la data inicial.
+</p>
+
+```{r,warning=FALSE}
+# Carga de la data Iris
+iris_bruto<- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+#visualizacion de la cantidades por especie de la data original
+iris.labels<-iris_bruto$Species
+table(iris.labels)
+
+#excluyendo la columna species el cual esta en posicion 5, creamos una data si esta variable categorica
+iris_data <- iris_bruto[1:4]
+
+# Verificar la estructura de los datos
+str(iris_data)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris_data,n=10)
+
+#escalando la data iris
+iris<-scale(iris_data,center=TRUE,scale=TRUE)
+
+```
+
+
+```{r}
+#calculo de la matriz de distancia euclideana
+iris.dis<-dist(iris) 
+
+# Verificar la estructura de los datos
+str(iris.dis)
+
+for(i in 1:1){
+#matriz de distancias (Euclidianas), solo muestra los primeros 7x7 valores 
+cat("Ploteo Matriz de Distancias(Euclideana),solo se imprime parte de la matriz(7x7)\n\n")
+print(as.matrix(iris.dis)[1:7, 1:7])
+}
+```
+
+
+```{r}
+
+# Realizar el agrupamiento jerárquico con el método de Ward
+grupo <- hclust(d=iris.dis, method = "ward.D2")
+
+# Dibujar el dendrograma
+plot(grupo, main = "Dendrograma con Distancia Euclidiana y Método Ward(ward.D2)")
+rect.hclust(grupo,k=3,borde=2:5)
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+# Imprimir los grupos resultantes
+print(grupos_cortados)
+
+#creacion de la tabla t1
+t4<-table(grupos_cortados,iris.labels)
+# Imprimir la tabla con título utilizando kable
+kable(t4, caption = "Tabla Metodo Ward.D2 y distancia Euclideana",format = "markdown",align="c")
+
+```
+
+
+# PREGUNTA 7
+<p align="justify">
+¿Se encuentran resultados mejores o peores? (para el breakdown, 
+solo emplear la clasificación salida, pero siempre las mediciones de 
+Iris).
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Se trabajara con el agrupamiento jerarquico entregado en la seccion 7, el cual 
+corresponde al metodo Ward.D2 con metrica euclideana y la data estandarizada. 
+Asi tenemos tenemos los tres agrupamientos que hace el algoritmo, los cuales
+pasamos a identificar segun la data original. El criterio es el siguiente:
+</p>
+
+* Grupo 1, el cual corresponde a la especie setosa
+
+* Grupo 2, el cual corresponde a la especie versicolor 
+
+* Grupo 3, el cual corresponde a la especie virginica
+
+
+```{r}
+#escalando la data iris
+iris<-scale(iris_data,center=TRUE,scale=TRUE)
+
+#calculo de la matriz de distancia euclideana
+iris.dis<-dist(iris) 
+
+# Realizar el agrupamiento jerárquico con el método de Ward
+grupo <- hclust(d=iris.dis, method = "ward.D2")
+
+# Puedes usar la función cutree() para cortar el dendrograma en un número específico de grupos
+num_grupos <- 3
+grupos_cortados <- cutree(grupo, num_grupos)
+
+#creacion de la tabla t1
+t2<-table(grupos_cortados,iris.labels)
+kable(t2, caption = "Tabla Metodo Ward.D2 y distancia Euclideana",format = "markdown",align="c")
+
+```
+
+<p align="justify">
+Se pasara a tranformar el dataframe para que tenga las etiquetas de la clasificacion y poder ver mas detalle del agrupamiento de la data:
+</p>
+
+```{r}
+#Comparamos con la data real
+Species <- factor(grupos_cortados,levels =1:3, labels = c("setosa","versicolor","virginica"))
+iris_test2 <- cbind( iris_bruto[,1:4],Species)
+
+# Convertir a character
+iris_test2$Species <- as.character(iris_test2$Species)
+
+#visualizando la estructura de la data
+head(iris_test2,n=10)
+```
+
+<p align="justify">
+Se hara la tabla breakdown sobre los tres grupos resultantes de la clasificación.
+</p>
+
+
+```{r,eval=TRUE}
+
+#Total de observaciones de la variable 1
+n_t = length(iris_test2[,1])
+
+#Media de las observaciones de la variable 1
+m_t = mean(iris_test2[,1])
+
+#Varianza de las observaciones de la variable 1
+v_t = var(iris_test2[,1])*(n_t-1)/n_t
+
+#Desviacon Standar de las observaciones de la variable 1
+s_t = sqrt(v_t)
+
+#Coeficiente de variacion de las observaciones de la variable 1
+cvt = s_t/m_t
+
+#Agrupamiento de las estadisticas totales
+total=rbind(n_t,m_t,v_t,s_t,cvt)
+
+#Estadisticas por varible categorica (Variable 5)
+n_unit=table(iris_test2[,5])
+
+#MEdia por categorica (Variable 5)
+mean=tapply(iris_test2[,1],iris_test2[,5],mean)
+
+#Varianza por categorica (Variable 5)
+var=tapply(iris_test2[,1],iris_test2[,5],var)
+var=var*(n_unit-1)/n_unit
+
+#Desviacion Standar por categorica (Variable 5)
+stdev=sqrt(var)
+cv=stdev/mean
+
+#Agrupamiento de las estadisticas parciales por variable categorica
+brk=rbind(n_unit,mean,var,stdev,cv)
+
+#Agrupamiento de la estadisticas por categoria (Var 5) contra la estadistica global(var 1)
+brtot2=cbind(brk,total)
+colnames(brtot2) = c(colnames(brk),"total")
+brtot2
+
+```
+
+
+La razon de correlacion sera:
+
+```{r,eval=TRUE}
+#La razón de correlación se puede calcular en dos maneras bajo esta tabla
+e = sum(n_unit*(mean-m_t)^2) / (n_t*v_t) 
+cat("Razon de correlacion(e):",e)
+```
+
+
+Asi resumiendo se tiene los siguientes cuadros:
+
+```{r}
+for(i in 1:1){
+  cat("Tabla 1: Metodo Ward.D2 c/dist Euclideana, datos sin Standarizar\n")
+  print(brtot1)
+  cat("\nTabla 2: Metodo Ward.D2 c/dist Euclideana, datos Standarizados\n")
+  print(brtot2)
+}
+```
+
+**Comentario**
+<p align="justify">
+Se observa que con la standatizacion de la data los valores del coeficiente de variazcion crece en el los calculos hechos con la standarizacion de la data. Esto se confirma con el coeficiente de correlacion el cual decae para la tabla 2. Esto nos quiere decir que los resultados salen peores con la standarizacion, para este caso.
+</p>
+
+# PREGUNTA 8
+<p align="justify">
+Con los datos de Linnerud y distancia Euclidiana, correr las análisis 
+jerárquicas con los 4 métodos (single, complete, average, y ward.d).
+</p>
+<br>
+
+**Solucion**
+
+```{r}
+
+
+# Carga de la data Linnerud
+linnerud <- read.csv("F:/R IMCA/TAREA 9/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(linnerud)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(linnerud,n=10)
+
+#calculo de la matriz de distancia euclideana
+linner.dis<-dist(linnerud)
+
+#modelo con el metodo single
+linhcl_s  <- hclust(d=linner.dis,method ="single")
+
+#modelo con el metodo complete
+linhcl_c  <- hclust(d=linner.dis,method ="complete")
+
+#modelo con el metodo average
+linhcl_av  <- hclust(d=linner.dis,method ="average")
+
+#modelo con el metodo ward.d
+linhcl_wd  <- hclust(d=linner.dis,method ="ward.D2")
+
+# Dibujando los dendrograma
+for(i in 1:1){
+plot(linhcl_s, main = "Dendrograma con Distancia Euclidiana y Método Single",hang=-1)
+
+plot(linhcl_c, main = "Dendrograma con Distancia Euclidiana y Método Complete",hang=-1)
+
+plot(linhcl_av, main = "Dendrograma con Distancia Euclidiana y Método Average",hang=-1)
+
+plot(linhcl_wd, main = "Dendrograma con Distancia Euclidiana y Método Ward(ward.D2)",hang=-1)
+}
+```
+
+
+
+# PREGUNTA 9
+<p align="justify">
+¿Cual clasificación le parece mejor?
+</p>
+<br>
+
+**Solucion**
+<p align="justify">
+Revisando los dendogramas del apartado 8, se observa que la que mejor hacer la clasificacion jerarquica es 
+el endograma con el Metodo Ward.D2 y con la distancia Euclidenada. Esto se debe a que el arbol generado, esta 
+mas balanceado que los otros arboles.
+</p>
+
+
