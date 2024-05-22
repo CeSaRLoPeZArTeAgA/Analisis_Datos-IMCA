@@ -1,0 +1,591 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 5 - Relaciones entre Variables Cualitativas"
+author: "Por: César Omar López Arteaga"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# Pregunta 1
+
+<p align="justify">
+Bajar el archivo Fiebre en R. Calcular las incidencias de la presencia 
+de cada carácter, la razón de riesgos de ambos, y la razón de momias.
+</p>
+<br>
+
+<p align="justify">
+Primero, necesitas instalar y cargar la biblioteca rio, lo cual se hace con los
+siguientess comandos:
+</p>
+
+```{r,eval=FALSE}
+# Instalar la biblioteca rio si aún no está instalada
+install.packages("rio",repos = "https://cloud.r-project.org/")
+```
+
+```{r}
+# Cargar la biblioteca rio
+library(rio)
+```
+
+<p align="justify">
+Se descargara el archivo Fiebre.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r, warning=FALSE,results='hold'}
+# Leer datos desde un archivo CSV
+tab <- import("G:/R IMCA/TAREA 5/DESCARGA_DATA/Fiebre.csv")
+#Impresion de la tabla
+print(tab)
+```
+
+```{r, results='hold'}
+#Calculo de Incidencia de presencia
+tab[1,2]<-tab[1,2]/tab[3,4]
+tab[1,3]<-tab[1,3]/tab[3,4]
+tab[1,4]<-tab[1,4]/tab[3,4]
+
+tab[2,2]<-tab[2,2]/tab[3,4]
+tab[2,3]<-tab[2,3]/tab[3,4]
+tab[2,4]<-tab[2,4]/tab[3,4]
+
+tab[3,2]<-tab[3,2]/tab[3,4]
+tab[3,3]<-tab[3,3]/tab[3,4]
+tab[3,4]<-tab[3,4]/tab[3,4]
+
+#Tabla de Incidencia de presencia
+print("Tabla de Incendencia")
+print(tab)
+```
+
+```{r,results='hold'}
+# Calculo de razon de riesgo
+V1_P <- tab[1,2]/tab[1,4]
+V1_A <- tab[2,2]/tab[2,4]
+RR_V1_V2<-V1_P/V1_A
+cat("RR(V1|V2) = ",round(RR_V1_V2,7),"\n")
+
+V2_P <- tab[1,2]/tab[3,2]
+V2_A <- tab[1,3]/tab[3,3]
+RR_V2_V1<-V2_P/V2_A
+cat("RR(V2|V1) = ",round(RR_V2_V1,7),"\n")
+
+```
+
+```{r}
+# Calculo de razon de momios (odds ratio)
+RM_V1_V2<-(tab[1,2]/tab[1,3])/(tab[2,2]/tab[2,3])
+cat("RM(V1|V2) =",round(RM_V1_V2,7),"\n")
+
+RM_V2_V1<-(tab[1,2]/tab[2,2])/(tab[1,3]/tab[2,3])
+cat("RM(V2|V1) =",round(RM_V2_V1,7),"\n")
+```
+
+<p align="justify">
+
+</p>
+
+<br>
+
+# Pregunta 2
+
+<p align="justify">
+Bajar el archivo Suicidios: son chicos que tentaron el suicidio y seis 
+meses después todavía tienen un comportamiento suicida o no, con o
+sin depresión. Calcular las incidencias, las razones de riesgo y la 
+razón de momias. 
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Suicidas.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r,warning=FALSE,results='hold'}
+# Leer datos desde un archivo CSV
+tab <- import("G:/R IMCA/TAREA 5/DESCARGA_DATA/Suicidas.csv")
+#Impresion de la tabla
+print(tab)
+```
+
+```{r, results='hold'}
+#Calculo de Incidencia de presencia
+tab[1,2]<-tab[1,2]/tab[3,4]
+tab[1,3]<-tab[1,3]/tab[3,4]
+tab[1,4]<-tab[1,4]/tab[3,4]
+
+tab[2,2]<-tab[2,2]/tab[3,4]
+tab[2,3]<-tab[2,3]/tab[3,4]
+tab[2,4]<-tab[2,4]/tab[3,4]
+
+tab[3,2]<-tab[3,2]/tab[3,4]
+tab[3,3]<-tab[3,3]/tab[3,4]
+tab[3,4]<-tab[3,4]/tab[3,4]
+
+#Tabla de Incidencia de presencia
+print("Tabla de Incendencia")
+print(tab)
+```
+
+```{r,results='hold'}
+# Calculo de razon de riesgo
+V1_P <- tab[1,2]/tab[1,4]
+V1_A <- tab[2,2]/tab[2,4]
+RR_V1_V2<-V1_P/V1_A
+cat("RR(V1|V2) = ",round(RR_V1_V2,7),"\n")
+
+V2_P <- tab[1,2]/tab[3,2]
+V2_A <- tab[1,3]/tab[3,3]
+RR_V2_V1<-V2_P/V2_A
+cat("RR(V2|V1) = ",round(RR_V2_V1,7),"\n")
+
+```
+
+```{r}
+# Calculo de razon de momios (odds ratio)
+RM_V1_V2<-(tab[1,2]/tab[1,3])/(tab[2,2]/tab[2,3])
+cat("RM(V1|V2) =",round(RM_V1_V2,7),"\n")
+
+RM_V2_V1<-(tab[1,2]/tab[2,2])/(tab[1,3]/tab[2,3])
+cat("RM(V2|V1) =",round(RM_V2_V1,7),"\n")
+```
+
+<p align="justify">
+
+
+</p>
+
+
+# Pregunta 3
+
+<p align="justify">
+Bajar el archivo Hongos.csv: son frecuencias de hongos en presencia/ausencia 
+de árboles de abedul o abeto. Calcular las incidencias de hongo las razones 
+de riesgo y de momios, considerando la presencia de una planta como la ausencia
+de otra
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Hongos.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r,results='hold',warning=FALSE}
+# Leer datos desde un archivo CSV
+tab <- import("G:/R IMCA/TAREA 5/DESCARGA_DATA/Hongos.csv")
+tab[1,4]<-tab[1,2]+tab[1,3]
+tab[2,4]<-tab[2,2]+tab[2,3]
+
+tab[3,2]<-tab[1,2]+tab[2,2]
+tab[3,3]<-tab[1,3]+tab[2,3]
+
+tab[3,4]<-tab[3,2]+tab[3,3]
+#Impresion de la tabla
+print(tab)
+```
+
+```{r, results='hold'}
+#Calculo de Incidencia de presencia
+tab[1,2]<-tab[1,2]/tab[3,4]
+tab[1,3]<-tab[1,3]/tab[3,4]
+tab[1,4]<-tab[1,4]/tab[3,4]
+
+tab[2,2]<-tab[2,2]/tab[3,4]
+tab[2,3]<-tab[2,3]/tab[3,4]
+tab[2,4]<-tab[2,4]/tab[3,4]
+
+tab[3,2]<-tab[3,2]/tab[3,4]
+tab[3,3]<-tab[3,3]/tab[3,4]
+tab[3,4]<-tab[3,4]/tab[3,4]
+
+#Tabla de Incidencia de presencia
+print("Tabla de Incendencia")
+print(tab)
+```
+
+```{r,results='hold'}
+# Calculo de razon de riesgo
+V1_P <- tab[1,2]/tab[1,4]
+V1_A <- tab[2,2]/tab[2,4]
+RR_V1_V2<-V1_P/V1_A
+cat("RR(V1|V2) = ",round(RR_V1_V2,7),"\n")
+
+V2_P <- tab[1,2]/tab[3,2]
+V2_A <- tab[1,3]/tab[3,3]
+RR_V2_V1<-V2_P/V2_A
+cat("RR(V2|V1) = ",round(RR_V2_V1,7),"\n")
+
+```
+
+```{r}
+# Calculo de razon de momios (odds ratio)
+RM_V1_V2<-(tab[1,2]/tab[1,3])/(tab[2,2]/tab[2,3])
+cat("RM(V1|V2) =",round(RM_V1_V2,7),"\n")
+
+RM_V2_V1<-(tab[1,2]/tab[2,2])/(tab[1,3]/tab[2,3])
+cat("RM(V2|V1) =",round(RM_V2_V1,7),"\n")
+```
+
+# Pregunta 4
+
+<p align="justify">
+¿Cual planta influye más?
+</p>
+<br>
+
+<p align="justify">
+Entre los dos tipos de plantas, el que mas influye en la aparecion de Hongos es 
+el "Abedo". 
+</p>
+
+
+# Pregunta 5
+
+<p align="justify">
+Bajar el archivo Ellenberg.csv: son presencias de 76 especies de hierbas en 
+25 sitios.
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Ellenberg.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+
+```{r}
+# Carga de la data Iris
+tab<- read.csv("G:/R IMCA/TAREA 5/DESCARGA_DATA/Ellenberg.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(tab)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(tab,n=10)
+```
+
+
+<p align="justify">
+De la exploracion de datos del rachivo Ellenberg, se observa que las variables son
+cualitativas. Hay 25 variables cualitativa de sitio contra 76 varibales cualitativa
+de tipos de observaciones de la planta que hay en una zona.El llenado de esta tabla
+indica si una especie esta o no presenta en una localidad. SI esta presente se le
+da el valor de 1 y si no esta presente el valor de 0.
+</p>
+
+
+
+# Pregunta 6
+
+<p align="justify">
+Calcular los índices de Van der Maarel y de Sørensen sobre la tabla, tanto entre
+sitios como entre especies.
+</p>
+<br>
+
+
+<p align="justify">
+Para el calculo de los indices de Van de Maarel y Sørensen, supondremos que las
+variable de interes seran las variables observadas(tipo de planta), por lo cual 
+se hara una tabla cruzada llamada "df", el cual solo interesara si una especie 
+con respecto a la otra esta presente.
+</p> 
+
+
+```{r}
+#Numero de varibles de sitios
+n<-ncol(tab)
+
+#Numero de varibles de especies
+m<-nrow(tab)
+
+#Inicializcion del dataframe de la tabla cruzada en ceros
+df<-as.data.frame(matrix(0,nrow = m,  ncol=m))
+rownames(df)<-rownames(tab)
+colnames(df)<-rownames(tab)
+
+#Llenado del dataframe, segun las visualizaciones tenidas
+for (i in 1:m){
+  for (j in i:m){
+    if (i==j){
+      df[i,j]=1
+    }else{
+      xx<-sum((tab[i,]==tab[j,])&!(tab[i,]==0))
+      df[i,j]=xx
+      df[j,i]=xx
+    }
+  }
+}
+# Verificar la estructura de los datos
+str(df)
+
+# Visualizar los primeros registros de los datos de la tabla cruzada
+head(df,n=25)
+```
+
+<p align="justify">
+Para el calculo de los indices de Sørensen y Van de Maarel, de la tabla cruzada se analiza cada entrada de esta tabla(df) y se construira unas subtabla de contigencia, el cual se podra calculas cada uno de los indices, este calaculo se guardara en las nueva tablas "SOR" para el indice de Sørensen y en la tabla "VAN" para el indice de Van de Maarel.
+</p> 
+
+
+```{r}
+# DEFINICIONES DE FUNCIONES PARA CALCULO DE INDICES
+# Indice de Sorenso
+ind_sor<-function(a,b,c){
+  return(2*a/(2*a+b+c))
+}
+
+# Indice de Van de Maarel
+ind_van<-function(a,b,c){
+  return((2*a-(b+c))/(2*a+b+c))
+}
+```
+
+```{r}
+# CALCULO DE INDICES 
+#Numero de varibles de sitios
+n<-ncol(tab)
+
+#Numero de varibles de especies
+m<-nrow(tab)
+
+#Inicializcion del dataframe de la tabla para los indices SOR con ceros
+SOR<-as.data.frame(matrix(0,nrow = m,  ncol=m))
+rownames(SOR)<-rownames(tab)
+colnames(SOR)<-rownames(tab)
+
+#Inicializcion del dataframe de la tabla para los indices VAN con ceros
+VAN<-as.data.frame(matrix(0,nrow = m,  ncol=m))
+rownames(VAN)<-rownames(tab)
+colnames(VAN)<-rownames(tab)
+
+#Llenado del dataframe SOR, segun las visualizaciones tenidas
+for (i in 1:m){
+  for (j in i:m){
+    if (i==j){
+      SOR[i,j]=1
+      VAN[i,j]=1
+    }else{
+      a<-df[i,j]
+      c<-sum(df[i,])-1-df[i,j]
+      b<-sum(df[,j])-1-df[i,j]
+      
+      xx<-ind_sor(a,b,c)
+      SOR[i,j]=xx
+      SOR[j,i]=xx
+      
+      yy<-ind_van(a,b,c)
+      VAN[i,j]=yy
+      VAN[j,i]=yy
+    }
+  }
+}
+
+```
+
+```{r}
+cat("\n--------- TABLA DE INDICE DE SORENSEN ---------")
+head(SOR,n=15)
+```
+
+```{r}
+cat("\n------- TABLA DE INDICE DE VAN DE MAAREL ------",quote = FALSE)
+head(VAN,n=15)
+```
+
+# Pregunta 7
+
+<p align="justify">
+En los datos de Iris: calcular los perfiles de columna, con el gráfico, 
+y las entropías y la información mutua de la tabla, según las fórmulas
+en la presentación de la clase. 
+</p>
+<br>
+
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se muestrara la estructura de la data, luego se muestra la tabla
+</p> 
+
+```{r}
+# Carga de la data Iris
+iris<- read.csv("G:/R IMCA/TAREA 5/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(iris)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris,n=10)
+
+```
+
+<p align="justify">
+Del analisis exploratorio, se observa que las primera 4 variables los datos son
+cuantitativo y la quinta variable son datos texto. Se procedera primero a pasar 
+los datos de la quinta variable de texto a variable cualitativa.Luego se pasara
+los datos de los primeros cuatro de cuantitativa a cualitativa, para ellos 
+agruparemos en intervalos fijos, los cuales seran las nuevas etiquetas y asi 
+formaremos la tabla de contigencia.
+</p> 
+
+```{r}
+
+#conversion de variable string a variable categorica
+iris$Species <- factor(iris$Species)
+
+#mostrando la tabla luego de la transformacion
+head(iris)
+
+#mostrando la estructura de la dataframe con la variable categorica nueva
+str(iris)
+
+#numero de variables cuantitativas mas una variable cualitativa
+n<-ncol(iris)
+
+#numero de variables categoricas de Species
+m<-nlevels(iris$Species)
+
+for(i in 1:(n-1)){
+#for(i in 1:1){
+  
+cat("\n######### ANALISIS VARIABLE SPECIES CON LA VARIABLE",colnames(iris)[i]," ############")  
+
+#generacion de numeros para los intervalos      
+intervalos<-seq(from=ceiling(min(iris[i]))-1, to=ceiling(max(iris[i])),by=1)
+
+# Generacion de etiquetas de los intervalos
+for (z in 1:(length(intervalos)-1)){
+  if(z==1){
+     etiquetas<-c( paste0("[",format(intervalos[z],digits=2)," - ", round(intervalos[z+1],2),"]"))  
+    }
+  else{
+    etiquetas<-c(etiquetas,paste0("[",format(intervalos[z]+.01,digits=3)," - ", round(intervalos[z+1],2),"]"))
+  }
+}
+ 
+iris[[i]]<-cut(iris[[i]], intervalos, labels = etiquetas)
+tiris=table(iris[,i],iris[,n])
+cat("\n --------Tabla de Contigencia---------")
+print(tiris)
+
+#Totales  marginales  de  fila 
+tr=margin.table(tiris,1)
+cat("\n  -------Totales  marginales  de  fila--------")
+print(tr)
+
+#Totales  marginales  de  columnas
+tc=margin.table(tiris,2)
+cat("\n  -------Totales  marginales  de  columnas--------")
+print(tc)
+
+#Frecencias  relativas 
+firis=prop.table(tiris)
+cat("\n  -------Frecuencias  relativas -------")
+print(firis)
+
+#Perfiles  marginales  de  fila 
+pr=margin.table(firis,1)
+cat("\n  -------Perfiles  marginales  de  filas-------")
+print(pr)  
+
+#Perfiles  marginales  de  columnas 
+pc=margin.table(firis,2)
+cat("\n  -------Perfiles  marginales  de  columnas-------")
+print(pc)
+
+priris=prop.table(tiris,1)  
+print(priris)  #
+
+pciris=prop.table(tiris,2)  
+print(pciris)  #
+
+#Tabla  valores  esperados
+exiris=pr%*%t(pc)
+cat("\n  -------Tabla  valores  esperados-------")
+print(exiris)  
+
+rbind  (tc,pc)
+cbind  (tr,pr)
+
+#ESTADISTICAS DE ENTROPIA
+#Entropía de filas
+Hr = - sum(pr*log(pr,2)) 
+cat("\n  ------------ Entropía de filas ---------------\n")
+cat("\tHr=",Hr)
+
+#Entropía de columnas
+Hc = - sum(pc*log(pc,2))
+cat("\n  ------------ Entropía de columnas -------------\n")
+cat("\tHc=",Hc)
+
+#Entropía conjunta
+Hrc = - sum(firis[!(firis==0)]*log(firis[!(firis==0)],2)) 
+cat("\n  ------------ Entropía Conjunta ----------------\n")
+cat("\tHrc=",Hrc)
+
+#Entropía condicional de filas
+Hr_c = Hrc - Hc  
+cat("\n  ------- Entropía condicional de filas ---------\n")
+cat("\tHr_c=",Hr_c)
+
+#Entropía condicional de columnas
+Hc_r = Hrc - Hr
+cat("\n  ----- Entropía condicional de columnas --------\n")
+cat("\tHc_r=",Hc_r)
+
+#Información mutua
+Irc <- Hr + Hc - Hrc
+cat("\n  ------------- Información mutua ---------------\n")
+cat("\tIrc=",Irc)
+
+#Phi - quadrado
+phi2 = sum((firis-exiris)^2/exiris)
+cat("\n  ---------------- Phi - quadrado ---------------\n")
+cat("\tPhi - quadrado=",phi2)
+
+# Chi- quadrado
+chi2 = sum((firis-exiris)^2/exiris)*sum(tiris) 
+cat("\n  ---------------- Chi - quadrado ---------------\n")
+cat("\tchi - quadrado=",chi2)
+
+#PLOTEO DE PERFILES
+#definicion de los colores de los perfiles de fila
+color<-sample(1:(length(intervalos)-1),length(intervalos)-1,replace=FALSE)
+plot(priris[1,],type="l",xaxt="n",xlab="Categorias",ylab="Frecuencias", main="Grafica de Perfiles de fila",col=color[1])
+for(j in 2:length(color)){
+  lines(1:m,priris[j,], col=color[j])
+}
+axis(1,at=1:m, labels = colnames(priris))
+legend("topright", 
+       legend =rownames(priris), 
+       fill = color)
+#definicion de los colores de los perfiles de columna
+ll<-length(colnames(tiris))
+color<-sample(1:ll,ll,replace=FALSE)
+plot(pciris[,1],type="l",xaxt="n",xlab="Categorias",ylab="Frecuencias", main="Grafica de Perfiles de Columna",col=color[1])
+for(j in 2:length(color)){
+  lines(1:length(rownames(tiris)),pciris[,j], col=color[j])
+}
+axis(1,at=1:length(rownames(tiris)), labels = rownames(tiris))
+legend("topright", 
+       legend =colnames(tiris), 
+       fill = color)
+}
+
+```
+
