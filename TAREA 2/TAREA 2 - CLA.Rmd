@@ -1,0 +1,602 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 2 - Lectura Archivos y Operaciones Matriciales"
+author: "Por: Cesar Omar Lopez Arteaga"
+date: "Febrero 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# 1. Instalacion de Paquetes
+<p align="justify">
+En este apartado se cargara los paquetes, para la lectura de archivos, los cuales
+</p>
+
+<p align="justify">
+Para **leer archivos ODS (OpenDocument Spreadsheet) en R**, puedes se utiliza la
+biblioteca readODS. Las  extension de los archivos a leer son *".ods"*. A continuacion
+se muestra la instalacion de la libreria, el cual se hace por unica vez. Luego 
+se usa el comando *library* con el nombre de la libreria, para cargar la libraria
+para usarla:
+</p>
+
+```{r,eval=FALSE}
+# Instalar la biblioteca readODS
+install.packages("readODS",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+# Cargar la biblioteca readODS
+library(readODS)
+```
+<br>
+
+Para **leer archivos Excel en R**, puedes utilizar la biblioteca readxl. Las 
+extension de los archivos a leer son *".xls"*.A continuacion
+se muestra la instalacion de la libreria, el cual se hace por unica vez. Luego 
+se usa el comando *library* con el nombre de la libreria, para cargar la libraria
+para usarla:
+</p>
+
+```{r, eval=FALSE}
+# Instalar la biblioteca readxl
+install.packages("readxl",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+#Cargar la biblioteca readxl
+library(readxl)
+```
+<br>
+
+<p align="justify">
+Para **leer y escribir archivos Excel en R**, puedes utilizar la biblioteca 
+openxlsx. Las extension de los archivos a leer son *".xls"* y *".xlsx"*. A continuacion
+se muestra la instalacion de la libreria, el cual se hace por unica vez. Luego 
+se usa el comando *library* con el nombre de la libreria, para cargar la libraria
+para usarla:
+</p>
+
+```{r,eval=FALSE}
+# Instalar la biblioteca openxlsx
+install.packages("openxlsx",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+# Cargar la biblioteca openxlsx
+library(openxlsx)
+```
+<br>
+
+
+<p align="justify">
+Para leer y escribir datos en varios formatos de archivo en R, incluidos CSV, 
+Excel, SPSS, Stata, y más, se puede utilizar la biblioteca **rio**. Esta 
+biblioteca es útil porque simplifica el proceso de lectura y escritura de datos
+en diferentes formatos, al proporcionar una función (import()) que 
+automáticamente detecta el formato del archivo y carga los datos de manera adecuada.
+</p> 
+
+Primero, necesitas instalar y cargar la biblioteca rio, lo cual se hace con los
+siguientess comandos:
+
+
+```{r,eval=FALSE}
+# Instalar la biblioteca rio si aún no está instalada
+install.packages("rio",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+# Cargar la biblioteca rio
+library(rio)
+```
+<br>
+
+
+# 2. Descarga de Archivos
+
+<p>Para la descarga de los archivos se hara de la siguiente direccion: </p>
+
+<a target="_blank" href="http://www.camiz.it/Universita/estadistica.htm">  Link: Sergio Camiz   </a>
+
+En el apartado de datos, se buscara las siguiente data, la cual se tendra de descargar:
+
+- Pielescuero (24-04-2021)
+
+<br>
+
+
+<p align="justify">
+Empezaremos a leer el archivo con extension **.ods**, para lo cual usamos el
+comando **read_ods**, con la ruta del archivo a leer. Luego de la lectura se 
+mostrara los primero 10 valores de la tabla con el comando head. Para esto 
+previamente esta cargado la libreria 
+**readODS**
+</p> 
+
+```{r}
+# Especificar la ruta del archivo ODS
+ruta_archivo <-"C:/Users/GL2/Downloads/R IMCA/TAREA 2/Pielescuero/Pielescuero.ods"
+
+
+# Leer el archivo ODS
+datos_ods<-read_ods(ruta_archivo)
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_ods)
+
+```
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_ods)
+
+```
+
+<br>
+
+<p align="justify">
+Ahora leemos el archivo con extension **.xlsx**, para lo cual usamos el
+comando **read_excel**, con la ruta del archivo a leer. Luego de la lectura se 
+mostrara los primero 10 valores de la tabla con el comando head. Para esto 
+previamente esta cargado la libreria 
+**readxl**
+</p> 
+
+```{r}
+# Especificar la ruta del archivo Excel
+ruta_archivo <- "C:/Users/GL2/Downloads/R IMCA/TAREA 2/Pielescuero/Pielescuero.xlsx"
+
+# Leer el archivo Excel
+datos_excel <- read_excel(ruta_archivo)
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_excel)
+```
+
+
+```{r}
+# Visualizar los primeros 10 registros de los datos
+head(datos_excel,n=10)
+
+```
+
+<br>
+
+
+<p align="justify">
+Ahora leemos el archivo con extension **.csv**, para lo cual usamos el
+comando **read_excel**, con la ruta del archivo a leer. Luego de la lectura se 
+mostrara los primero 10 valores de la tabla con el comando head. Para esto 
+previamente esta cargado la libreria 
+**readxl**
+</p> 
+
+```{r}
+# Leer datos desde un archivo CSV
+datos_csv <- import("C:/Users/GL2/Downloads/R IMCA/TAREA 2/Pielescuero/Pielescuero.csv")
+
+```
+
+```{r}
+# Verificar la estructura de los datos
+str(datos_csv)
+```
+
+
+```{r}
+# Visualizar los primeros registros de los datos
+head(datos_csv)
+```
+
+```{r}
+
+# Leer un archivo CSV y almacenar los datos en un objeto llamado 'datos'
+datos <- read.csv("C:/Users/GL2/Downloads/R IMCA/TAREA 2/Pielescuero/Pielescuero.csv")
+
+# Verificar la estructura de los datos
+str(datos)
+
+# Visualizar los primeros registros de los datos
+head(datos)
+
+```
+<br>
+
+# 3. Manejo de Matrices
+
+
+<p align="justify">
+En R, una matriz es una estructura de datos bidimensional que contiene elementos
+del mismo tipo. Puedes pensar en una matriz como una colección rectangular de 
+elementos organizados en filas y columnas.
+</p> 
+
+<p align="justify">
+Para la creacion de una matriz de **nrow** filas y **ncol** columnas, se usara 
+el comando:
+$$matrix(secuencia, nrow=... , ncol=... )$$
+</p> 
+
+```{r}
+# Crear una matriz de 3 filas y 2 columnas, con una secuencia de 1 al 6
+matriz <- matrix(1:6, nrow = 3, ncol = 2)
+
+```
+
+```{r}
+#mostrando matriz
+matriz
+```
+
+<br>
+
+<p align="justify">
+A continuacion se presenta un ejemplo de generacion de una matrix de dimension 3x4,
+que toma valores aleatorios entre 1 a 12, NO pudiendo tomar valores repetidos.
+</p> 
+
+```{r}
+# Especificando las dimensiones de la matriz
+filas <- 3
+columnas <- 4
+
+# Crear una matriz de dimensiones filas x columnas con valores aleatorios entre 1 y 12
+matriz_azar <- matrix(sample(1:12, filas * columnas, replace = FALSE), nrow = filas, ncol = columnas)
+
+```
+
+```{r}
+# Mostrando la matriz
+matriz_azar
+```
+
+<br>
+
+<p align="justify">
+Ahora se creara dos matrices **A** y **B**, de igual numero de fila y columna. 
+Para nuestro caso sera de dimension 5x5
+</p> 
+
+```{r}
+# Especificando las dimensiones de la matriz
+filas <- 5
+columnas <- 5
+
+# Crea matriz de dimensiones filasxcolumnas con valores aleatorios entre 1 y filas*columnas
+A <- matrix(sample(1:(filas*columnas), filas * columnas, replace = FALSE), nrow = filas, ncol = columnas)
+B <- matrix(sample(1:(filas*columnas), filas * columnas, replace = FALSE), nrow = filas, ncol = columnas)
+```
+
+
+```{r}
+# Mostrar la matriz A
+A
+```
+
+
+```{r}
+# Mostrar la matriz B
+B
+```
+
+<p align="justify">
+Ahora se procedera ha hacer las operaciones basicas entre la matrices **A** y **B**.
+</p>
+
+```{r}
+#Suma de matrices
+A+B
+```
+
+```{r}
+#Sustracion de matrices
+A-B
+```
+
+
+```{r}
+#Multiplicacion de matrices punto a punto
+A*B
+```
+
+
+```{r}
+#Division de matrices punto a punto
+A/B
+```
+
+
+```{r}
+#Elevar una matriz a otra matriz punto a punto
+A^B
+```
+
+<br>
+
+<p align="justify">
+Ahora se procede a crear dos matrices **A** y **B**, pero con diferentes fila y
+columnas. La dimension de la matriz **A** sera de 3x5 y la dimension de la matriz 
+**B** sera de 5x3
+</p>
+
+
+```{r}
+# Creacion de las matrices A y B
+A <- matrix(sample(1:(3*5), 3*5, replace = FALSE), nrow = 3, ncol = 5)
+B <- matrix(sample(1:(5*3), 5*3, replace = FALSE), nrow = 5, ncol = 3)
+```
+
+```{r}
+# Mostrar la matriz A
+A
+```
+
+
+```{r}
+# Mostrar la matriz B
+B
+```
+
+<br>
+
+<p align="justify">
+Ahora se procedera ha hacer las operaciones basicas entre la matrices **A** y **B**.
+Ahora veremos que no se puede hacer estas operaciones.
+</p>
+
+
+```{r message=FALSE, warning=TRUE}
+#Suma de matrices
+#A+B, A-B, A*B, A/B y A^B arrojan error al compilar
+```
+<br>
+
+<p align="justify">
+Ahora se procede a crear dos matrices **A** y **B**.La dimension de la matriz **A** 
+sera de 3x5 y la dimension de la matriz **B** sera de 5x3, y se procedera a ejecutar
+la multiplicacion clasica de metrices.
+</p>
+
+```{r}
+# Creacion de las matrices A y B
+A <- matrix(sample(1:(3*5), 3*5, replace = FALSE), nrow = 3, ncol = 5)
+B <- matrix(sample(1:(5*3), 5*3, replace = FALSE), nrow = 5, ncol = 3)
+```
+
+```{r}
+#Multiplicacion de matrices clasica
+A%*%B
+```
+<br>
+
+<p align="justify">
+Ahora se procede a crear dos matrices **A** de dimension 3x5, luego se mostrara la
+matriz transpuesta, usando el comando **t(A)**.
+</p>
+
+```{r}
+# Creacion de las matrices A
+A <- matrix(sample(1:(3*5), 3*5, replace = FALSE), nrow = 3, ncol = 5)
+```
+
+```{r}
+# Mostrar la matriz A
+A
+```
+
+```{r}
+#Matriz transpuesta
+t(A)
+```
+
+<br>
+
+<p align="justify">
+Para crear una matriz aleatoria en R, puedes utilizar la función matrix() junto 
+con la función runif() para generar números aleatorios. La funcion de runif() 
+genera números aleatorios distribuidos uniformemente en el intervalo [0, 1]. Para
+este ejemplo se crearan la matriz **A** y **B** de dimensiones 3x5
+</p>
+
+```{r}
+# Definir las dimensiones de la matriz
+filas <- 3
+columnas <- 5
+
+# Generar una matriz aleatoria de dimensiones filas x columnas
+A<- matrix(runif(filas * columnas), nrow = filas, ncol = columnas)
+B<- matrix(runif(filas * columnas), nrow = filas, ncol = columnas)
+```
+
+```{r}
+# Imprimir la matriz aleatoria A
+A
+```
+
+
+```{r}
+# Imprimir la matriz aleatoria B
+B
+```
+
+<p align="justify">
+Ahora con las matrices **A** y **B** se haran las operaciones: **+, -, * , / ** 
+y **^**.
+</p>
+
+
+```{r}
+#Suma de matrices
+A+B
+```
+
+```{r}
+#Sustracion de matrices
+A-B
+```
+
+
+```{r}
+#Multiplicacion de matrices punto a punto
+A*B
+```
+
+
+```{r}
+#Division de matrices punto a punto
+A/B
+```
+
+
+```{r}
+#Elevar una matriz a otra matriz punto a punto
+A^B
+```
+
+<br>
+
+<p align="justify">
+Ahora con las matrices aleatorias **A** y **B** se calcularan **A%*%B** , **t(A)%*%B** ,
+ **A%*%t(B)** , **B%*%t(A)** , **t(B)%*%A**.
+</p>
+
+
+```{r}
+#Multiplicacion de matrices clasica, no ase puede hacer esta operacion por la
+#dimension no es correcta
+#A%*%B
+```
+
+```{r}
+#Multiplicacion clasica de la transpuesta de A con B.
+t(A)%*%B
+```
+
+
+```{r}
+#Multiplicacion clasica de A con transpuesta de B.
+A%*%t(B)
+```
+
+
+```{r}
+#Multiplicacion clasica de B con la transpuesta de A
+B%*%t(A)
+```
+
+```{r}
+#Multiplicacion clasica de la transpuesta de B con A
+t(B)%*%A
+```
+
+<br>
+
+<p align="justify">
+Para crear una matriz aleatoria en R, puedes utilizar la función matrix() junto 
+con la función runif() para generar números aleatorios. La funcion de runif() 
+genera números aleatorios distribuidos uniformemente en el intervalo [0, 1]. Para
+este ejemplo se crearan la matriz **C** y **D** de dimensiones 2x4
+</p>
+
+
+```{r}
+# Definir las dimensiones de la matriz
+filas <- 2
+columnas <- 4
+
+# Generar una matriz aleatoria de dimensiones filas x columnas
+C<- matrix(runif(filas * columnas), nrow = filas, ncol = columnas)
+D<- matrix(runif(filas * columnas), nrow = filas, ncol = columnas)
+```
+
+```{r}
+# Imprimir la matriz aleatoria C
+C
+```
+
+
+```{r}
+# Imprimir la matriz aleatoria D
+D
+```
+
+<p align="justify">
+Ahora con las matrices aleatorias **C** y **D** se calcularan  t(C)%$*$%D,
+ C%$*$%t(D), C%$*$%t(D), t(C)%$*$%D.
+</p>
+
+```{r}
+#Multiplicacion clasica de la transpuesta de C con D.
+t(C)%*%D
+```
+
+
+```{r}
+#Multiplicacion clasica de C con transpuesta de D.
+C%*%t(D)
+```
+
+
+```{r}
+#Multiplicacion clasica de C con la transpuesta de D
+C%*%t(D)
+```
+
+```{r}
+#Multiplicacion clasica de la transpuesta de C con D
+t(C)%*%D
+```
+
+<br>
+
+<p align="justify">
+Ahora extraeremos de A una submatriz F de 2 filas y 3 columnas utilizando la escritura
+A[1:2,1:3]
+</p>
+
+
+```{r}
+#Extracion de una submatriz de 2x3
+F<-A[1:2,1:3]
+```
+
+```{r}
+# Imprimir la submatriz F
+F
+```
+
+<br>
+
+<p align="justify">
+Como la dimension de C es `r dim(C)` y la dimension de A es `r dim(A)`, asi cualquier combinacion
+ de transpuestas, no tiene la dimension correcta para la multiplicacion clasica
+para C%$*$%A, t(C)%$*$%A, C%$*$%t(A), t(C)%$*$%t(A).
+</p>
+
+<p align="justify">
+Como la dimension de la matriz C es `r dim(C)` y la dimension de la matriz F es 
+`r dim(F)`, asi la unica forma de multiplicar el producto de filaa por columna
+ es t(C)%*%F.
+</p>
+
+---
