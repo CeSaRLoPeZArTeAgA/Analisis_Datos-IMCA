@@ -1,0 +1,466 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 3 - Estadisticas Descriptivas por Variable Cualitativa"
+author: "Por: Cesar Omar Lopez Arteaga"
+date: "Febrero 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+# Pregunta 1
+
+<p align="justify">
+Considerando 131 pacientes con depresión y 132 sin depresión, 
+calcular riesgo y momio y comentar resultados.
+</p>
+
+
+```{r}
+# Ingreso de datos y calculos 
+depresivos <- c(131,132) # Ingreso de datos
+nombres <- c("Pacientes Depresivos","Pacientes No Depresivos") # etiquetas
+names(depresivos) <- nombres # se utiliza para establecer nombres a las columnas
+n <- sum(depresivos) # tamaño muestra
+frecuencias <- depresivos/n # frecuencia de los datos
+```
+
+```{r}
+# Creacion de la tabla de las Estadisticas Descriptivas
+tab <- rbind(t(depresivos),t(frecuencias)) # tabla de salida creada
+rownames(tab) <- c("números","frecuencia") # nombres de kas filas
+round(tab,3) # salida rondeada de la tabla creada
+```
+
+```{r}
+# Calculo del Riesgo
+noquote(paste0("riesgo = ", round(depresivos[1]/n,3))) 
+```
+
+```{r}
+# Calculo de Momio
+noquote(paste0("momio = ", round(depresivos[1]/depresivos[2],3))) 
+```
+
+```{r}
+# Grafico Circular
+nompie <- paste(nombres,round(frecuencias,3),sep=" ") # etiquetas pie
+pie(frecuencias,
+    labels = paste0(depresivos," paciente =",round(100*frecuencias/sum(frecuencias),2),"%"),
+    col=c("#698B22","#76EEC6"), #definicion de color en hexadecimal
+    border = "blue",  # Color del borde de las porciones
+    density = 75,
+    init.angle=0, # Ángulo inicial
+    angle = 45, # Ángulo de inclinación de las etiquetas
+    main="Riesgo por Depresion")
+
+legend("topleft", 
+       legend = nombres, 
+       fill = c("#698B22","#76EEC6"))
+```
+
+<p align="justify">
+Segun los resultado, el riesgo que un paciente tenga depresion es del `r 100*round(depresivos[1]/n,3)` %. El momio indica que las personas que desarrollan depresion tienen aproximadamente `r round(depresivos[1]/depresivos[2],3)` veces  probabilidad de desarrollar depresion en comparación con los pacientes que no 
+desarrollan depresion.
+</p>
+<br>
+
+# Pregunta 2
+
+<p align="justify">
+Considerando 907 creyentes en una vida post-muerte y 220 que no 
+creen, calcular riesgo y momio y comentar resultados.
+</p>
+
+```{r}
+# Ingreso de datos y calculos 
+creyente <- c(907,220) # Ingreso de datos
+nombres <- c("Creyentes de la vida Post muerte","No Creyentes de la vida Post muerte") # etiquetas
+names(creyente) <- nombres # se utiliza para establecer nombres a las columnas
+n <- sum(creyente) # tamaño muestra
+frecuencias <- creyente/n # frecuencia de los datos
+
+```
+
+```{r}
+# Creacion de la tabla de las Estadisticas Descriptivas
+tab <- rbind(t(creyente),t(frecuencias)) # tabla de salida creada
+rownames(tab) <- c("números","frecuencia") # nombres de kas filas
+round(tab,3) # salida rondeada de la tabla creada
+```
+
+```{r}
+# Calculo del Riesgo
+noquote(paste0("riesgo = ", round(creyente[1]/n,3))) 
+```
+
+```{r}
+# Calculo de Momio
+noquote(paste0("momio = ", round(creyente[1]/creyente[2],3))) 
+```
+
+
+```{r}
+# Grafico Circular
+nompie <- paste(nombres,round(frecuencias,3),sep=" ") # etiquetas pie
+pie(frecuencias,
+    labels = paste0(creyente," personas =",round(100*frecuencias/sum(frecuencias),2),"%"),
+    col=c("#9ACD32","#7D26CD"), #definicion de color en hexadecimal
+    border = "red",  # Color del borde de las porciones
+    density = 75,
+    init.angle=0, # Ángulo inicial
+    angle = 45, # Ángulo de inclinación de las etiquetas
+    main="Riesgo por Depresion")
+
+legend("topright", 
+       legend = nombres, 
+       fill = c("#9ACD32","#7D26CD"))
+```
+
+<p align="justify">
+Segun los resultado, el riesgo que una persona crea en la vida post muerte es del `r 100*round(creyente[1]/n,3)` %. El momio indica que las personas que creen la vida post muerte tiene aproximadamente `r round(creyente[1]/creyente[2],3)` veces  mas probabilidad con respecto de las personas que no creen en la vida post muerte.
+</p>
+<br>
+
+# Pregunta 3
+
+<p align="justify">
+Completar la declaración de factores para los caracteres de 
+Pielescuero y calcular distribución, frecuencias relativas, modas y 
+entropías. 
+</p>
+
+
+<p align="justify">
+Ahora leemos el archivo con extension **.xlsx**, para lo cual usamos el
+comando **read_excel**, con la ruta del archivo a leer. Luego de la lectura se 
+mostrara los primero 10 valores de la tabla con el comando head. Para esto 
+previamente esta cargado la libreria 
+**readxl**
+</p> 
+
+
+```{r, eval=FALSE}
+# Instala de readxl
+install.packages("readxl",repos = "https://cloud.r-project.org/")
+
+```
+
+```{r}
+# Carga la librería readxl 
+library(readxl)
+```
+
+```{r}
+# Especificar la ruta del archivo Excel
+ruta_archivo <- "G:/R IMCA/TAREA 3/DESCARGAS_DATA/Pielescuero.xlsx"
+
+# Leer el archivo Excel
+data <- read_excel(ruta_archivo)
+```
+
+<p align="justify">
+Se muestra la estructura de la data y se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+```{r}
+# Verificar la estructura de los datos
+str(data)
+```
+
+
+```{r}
+# Visualizar los primeros 15 registros de los datos
+head(data,n=15)
+
+```
+
+
+<p align="justify">
+Se instala el paquete DescTools y luego se cargara la liberia, esto para el 
+calculo de la moda.
+</p> 
+
+```{r, eval=FALSE}
+# Instalar el paquete para el calculo de moda
+install.packages("DescTools",repos = "https://cloud.r-project.org/")
+```
+
+```{r}
+# Cargar el paquete para el calculo de la moda
+library(DescTools)
+```
+
+<p align="justify">
+Se procedera ha hacer los calculos por variable, para lo cual se calculara las
+frecuencias, frecuencias relativas, entropia y moda. Se muestra a continuacion
+el codigo paara la generacion automatica de los calculos.
+</p> 
+
+
+```{r}
+#Calculo de las frecuencias Absolutas
+nombres<-colnames(data)
+for(i in 1:ncol(data)){
+  print(quote=FALSE,"--------------------------------------------------------------------- ")
+  
+  # Calculo de la frecuencia de cada variable
+  frecuencia<-eval(parse(text = paste0("table(data$",nombres[i],")")))
+  
+  # Calculo de la frecuencia relativa de cada variable
+  frecuencia_Relativa<-frecuencia/sum(frecuencia)
+  
+  # Calculo de la Entropia
+  h = -sum(frecuencia_Relativa*log(frecuencia_Relativa,2)) 
+  
+  # Calculo de la moda
+  moda<-eval(parse(text = paste0("Mode(data$",nombres[i],")")))
+  
+  # Impresion de las frecuencias
+  print(cbind(frecuencia,frecuencia_Relativa))
+ 
+  # Impresion de la Entropia
+  print(quote=FALSE, paste0(prefix="Entropia total de la variable ",nombres[i]," es: "))
+  print(h)
+ 
+  # Impresion de la Moda
+  print(paste0("La moda de ",nombres[i]," es: "),quote=FALSE)
+  print(moda)
+   
+  # Gráfico de barras
+  barplot(frecuencia_Relativa, 
+      main = "Frequencia relativa (%)",
+      col = c(1:ncol(data)))
+  
+  # Grafico Circular
+  nompie <- paste(nombres,round(frecuencia,3),sep=" ") # etiquetas pie
+  pie(frecuencia,
+      labels = paste0(frecuencia," datos =",round(100*frecuencia/sum(frecuencia),2),"%"),
+      col=c(1:ncol(data)), #definicion de color en hexadecimal
+      border = "blue",  # Color del borde de las porciones
+      density = 80,
+      init.angle=0, # Ángulo inicial
+      angle = 45, # Ángulo de inclinación de las etiquetas
+      main=paste0("Diagrama Circular de la Variable ",nombres[i]))
+}
+```
+
+
+# Pregunta 4
+
+<p align="justify">
+Bajar el archivo Snee.csv desde internet utilizando la dirección 
+http://www.camiz.it/sergio/Universita/Dati/ y cargar-lo en R. Trata-se 
+de Color de ojos y Color de pelo de 592 Alumnos de la Universidad 
+de Delaware en 1974.
+</p>
+
+
+
+<p align="justify">
+Se bajara el archivo Snee.csv, luego se cargara el archivo y se muestrara la 
+estructura de la data, luego se muestra los primeros 15 valores de la
+tabla
+</p> 
+
+```{r}
+
+# Leer un archivo CSV y almacenar los datos en un objeto llamado 'datos'
+df <- read.csv( "G:/R IMCA/TAREA 3/DESCARGAS_DATA/Snee.csv")
+
+# Verificar la estructura de los datos
+str(df)
+
+# Visualizar los primeros 15 registros de los datos
+head(df,n=15)
+
+```
+<br>
+
+
+
+# Pregunta 5
+
+<p align="justify">
+Transformar todas las dos columnas en factores, según las reglas 
+siguientes:
+</p>
+
+<br>
+<p align="justify">
+Comenzamos a transformar el dataframe de la columna Colore_occhi con las reglas
+establecidas, luego visualizamos como va quedando el dataframe(df).
+</p>
+
+```{r}
+df$Colore_occhi[df$Colore_occhi == 1] <- "Pardo Oscuro"
+df$Colore_occhi[df$Colore_occhi == 2] <- "Pardo Claro"
+df$Colore_occhi[df$Colore_occhi == 3] <- "Verde"
+df$Colore_occhi[df$Colore_occhi == 4] <- "Azul"
+df
+```
+
+<br>
+<p align="justify">
+A continuaacion se transformar el dataframe de la columna Colore_capelli con 
+las reglas establecidas, luego visualizamos como va quedando el dataframe(df).
+</p>
+
+```{r}
+df$Colore_capelli[df$Colore_capelli == 1] <- "Negro"
+df$Colore_capelli[df$Colore_capelli == 2] <- "Pardo"
+df$Colore_capelli[df$Colore_capelli == 3] <- "Rojo"
+df$Colore_capelli[df$Colore_capelli == 4] <- "Rubio"
+df
+```
+
+
+# Pregunta 6
+
+<p align="justify">
+Guardar en un nuevo archivo.
+</p>
+
+<p align="justify">
+Se tiene el dataframe llamado df, el queremos guardar en un nuevo archivo CSV, 
+llamado nuevo_Snee.csv. Para ellos usaremos el comando write.csv2().
+</p>
+
+```{r}
+# Utilizando write.csv2()
+write.csv(df, file = "G:/R IMCA/TAREA 3/DESCARGAS_DATA/nuevo_Snee.csv", row.names = FALSE)
+```
+
+# Pregunta 7
+
+<p align="justify">
+Calcular las distribuciones, la moda y la entropía de los dos 
+caracteres y hacer gráficos circulares.
+</p>
+
+
+
+```{r}
+# Leer un archivo CSV y almacenar los datos en un objeto llamado 'ndf'
+ndf <- read.csv( "G:/R IMCA/TAREA 3/DESCARGAS_DATA/nuevo_Snee.csv")
+
+# Verificar la estructura de los datos
+str(ndf)
+
+# Visualizar los primeros 15 registros de los datos
+head(ndf,n=15)
+
+#Calculo de las frecuencias Absolutas
+nombres<-colnames(ndf)
+for(i in 1:ncol(ndf)){
+  print(quote=FALSE,"--------------------------------------------------------------------- ")
+  
+  # Calculo de la frecuencia de cada variable
+  frecuencia<-eval(parse(text = paste0("table(ndf$",nombres[i],")")))
+  
+  # Calculo de la frecuencia relativa de cada variable
+  frecuencia_Relativa<-frecuencia/sum(frecuencia)
+  
+  # Calculo de la Entropia
+  h = -sum(frecuencia_Relativa*log(frecuencia_Relativa,2)) 
+  
+  # Calculo de la moda
+  moda<-eval(parse(text = paste0("Mode(ndf$",nombres[i],")")))
+  
+  # Impresion de las frecuencias
+  print(cbind(frecuencia,frecuencia_Relativa))
+ 
+  # Impresion de la Entropia
+  print(quote=FALSE, paste0(prefix="Entropia total de la variable ",nombres[i]," es: "))
+  print(h)
+ 
+  # Impresion de la Moda
+  print(paste0("La moda de ",nombres[i]," es: "),quote=FALSE)
+  print(moda)
+   
+  # Gráfico de barras
+  barplot(frecuencia_Relativa, 
+      main = "Frequencia relativa (%)",
+      col = c(1:length(frecuencia)))
+  
+  # Grafico Circular
+  nompie <- paste(nombres,round(frecuencia,3),sep=" ") # etiquetas pie
+  pie(frecuencia,
+      labels = paste0(frecuencia," datos =",round(100*frecuencia/sum(frecuencia),2),"%"),
+      col=c(1:length(frecuencia)), #definicion de color en hexadecimal
+      border = "blue",  # Color del borde de las porciones
+      density = 80,
+      init.angle=0, # Ángulo inicial
+      angle = 45, # Ángulo de inclinación de las etiquetas
+      main=paste0("Diagrama Circular de la Variable ",nombres[i]))
+}
+```
+
+# Pregunta 8
+
+<p align="justify">
+Mejorar los gráficos, con títulos, porcentajes, colores, etc.
+</p>
+
+
+<p align="justify">
+Mejoramos los gráficos, con títulos, porcentajes, colores que acontinuacion 
+mostramos el codigo.
+</p>
+
+
+
+```{r}
+# Leer un archivo CSV y almacenar los datos en un objeto llamado 'ndf'
+ndf <- read.csv( "G:/R IMCA/TAREA 3/DESCARGAS_DATA/nuevo_Snee.csv")
+
+#Calculo de las frecuencias Absolutas
+nombres<-colnames(ndf)
+for(i in 1:ncol(ndf)){
+  print(quote=FALSE,"--------------------------------------------------------------------- ")
+  
+  # Calculo de la frecuencia de cada variable
+  frecuencia<-eval(parse(text = paste0("table(ndf$",nombres[i],")")))
+  
+  # Calculo de la frecuencia relativa de cada variable
+  frecuencia_Relativa<-frecuencia/sum(frecuencia)
+  
+  # Calculo de la Entropia
+  h = -sum(frecuencia_Relativa*log(frecuencia_Relativa,2)) 
+  
+  # Calculo de la moda
+  moda<-eval(parse(text = paste0("Mode(ndf$",nombres[i],")")))
+  
+  # Gráfico de barras
+  barplot(frecuencia_Relativa, 
+      main = "Diagrama de barras - Frequencia relativa (%)",
+      col = c(1:length(frecuencia)))
+  
+  # Grafico Circular
+  nompie <- paste(nombres,round(frecuencia,3),sep=" ") # etiquetas pie
+  pie(frecuencia,
+      labels = paste0(frecuencia," datos =",round(100*frecuencia/sum(frecuencia),2),"%"),
+      col=c(1:length(frecuencia)), #definicion de color en hexadecimal
+      border = "blue",  # Color del borde de las porciones
+      density = 80,
+      init.angle=17, # Ángulo inicial
+      angle = 45, # Ángulo de inclinación de las etiquetas
+      lty = 3,
+      main=paste0("Diagrama Circular de la Variable ",nombres[i]))
+  
+  legend("bottomleft", 
+       title = "Leyenda", 
+       legend = names(frecuencia), 
+       fill = c(1:length(frecuencia)))
+}
+```
+
