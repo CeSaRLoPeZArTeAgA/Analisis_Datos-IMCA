@@ -1,0 +1,723 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 7 - Analisis Exploratorio"
+author: "Por: César Omar López Arteaga"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# PREGUNTA 1
+<p align="justify">
+Bajar los archivos Linnerud, Iris y Decathlon completo.
+</p>
+<br>
+**Solucion**
+<p align="justify">
+Se descargara el archivo Linnerud.csv a una carpeta local, luego se cargara el 
+archivo y se mostrara la estructura de la data, la cual llamaremos **"linne"**, 
+luego se muestra la tabla con las primeras 10 observaciones.
+</p> 
+
+```{r}
+# Carga de la data Iris
+linne<- read.csv("G:/R IMCA/TAREA 7/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(linne)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(linne,n=10)
+
+```
+
+<br>
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se mostrara la estructura de la data, la cual llamaremos **"iris"**, 
+luego se muestra la tabla con las primeras 10 observaciones.
+</p> 
+
+```{r}
+# Carga de la data Iris
+iris<- read.csv("G:/R IMCA/TAREA 7/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(iris)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris,n=10)
+
+```
+
+
+
+<br>
+<p align="justify">
+Se descargara el archivo Decathlon_cpl.csv a una carpeta local, luego se cargara el 
+archivo y se mostrara la estructura de la data, la cual llamaremos **"deca"**, 
+luego se muestra la tabla con las primeras 10 observaciones.
+</p> 
+
+
+
+```{r}
+# Carga de la data Iris
+deca<- read.csv("G:/R IMCA/TAREA 7/DESCARGA_DATA/Decathlon_cpl.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(deca)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(deca,n=10)
+
+```
+
+<br>
+
+# PREGUNTA 2
+<p align="justify">
+Calcular las tres matrices de correlacion (limitadamente a las variables cuantitativas):
+comentar en cada archivo las correlaciones mas bajas (negativas) y las mas altas.
+</p>
+
+**Solucion**
+<p align="justify">
+Se hara los calculos para la matriz de correlacion para los tres conjuntos de datos
+de la pregunta 1.
+</p>
+
+**PARA LA DATA LINNERUD**
+<br>
+<p align="justify">
+De la matrix de correlacion de las variables Linnerud, vemos que las variable con mayor correlacion son:
+</p>
+- Peso - Cintura con r=0.8702435
+- Lanzamientos - Flexiones con r=0.6957274
+<br>
+
+<p align="justify">
+De la matrix de correlacion vemos que las variable con menor correlacion son:
+</p>
+- Flexiones - Cintura con r=-0.6455980
+- Lanzamientos - Cintura con r=-0.5522321
+
+```{r}
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(linne[,1:6])
+
+#Matriz de Correlaciones total
+plot(linne[,1:6], main="Matriz de Correlaciones de las variable de la data Linnerud")
+```
+
+<p align="justify">
+Se graficara primero las relaciones de correlacion maximas las cuales son:
+</p>
+
+* [1] Peso - Cintura
+* [2] Lanzamientos - Flexiones
+
+```{r}
+#Correlacion entre Peso y Cintura
+plot(linne$Peso,linne$Cintura,main="[1] Correlacion entre Peso y Cintura, r=0.8702435")
+
+#Correlacion entre Lanzamientos y Flexiones
+plot(linne$Lanzamientos,linne$Flexiones,main="[2] Correlacion entre Lanzamientos y Flexiones, r=0.6957274")
+
+```
+
+<p align="justify">
+Se graficara las relaciones de correlacion minimas las cuales son:
+</p>
+
+* [4] Flexiones - Cintura
+* [5] Lanzamientos - Cintura
+
+```{r}
+#Correlacion entre Saltos y Pulsaciones
+plot(linne$Flexiones,linne$Cintura,main="[4] Correlacion entre Flexiones y Cintura, r=-0.6455980")
+
+#Correlacion entre Lanzamientos y Pulsaciones
+plot(linne$Lanzamientos,linne$Pulsaciones,main="[5] Correlacion entre Lanzamientos y Cintura, r=-0.5522321")
+```
+
+**Comentario**
+<p align="justify">
+Se observa que la correlacion mas alta corresponde entre Peso y Cintura, la cual es $r=0.8702435$, esto nos  indica que si una variable aumenta la otra variable aunmenta tambien, a esta correlacion se le denomina correlacion positiva fuerte fuerte. La correlacion mas baja se da entre las variables Flexioness y Cintura, la cual es $r=-0.5522321$, esto nos indica que que si una variable aumenta la otra disminuye, a esta correlacion se la denomina correlacion negativa debil.
+</p>
+
+---
+
+**PARA LA DATA IRIS**
+<p align="justify">
+De la matrix de correlacion de las variables iris, vemos que las variable con mayor correlacion son:
+</p>
+- Petal.length - Petal.width con r=0.9628654
+- Sepal.length - Petal.length con r=0.871738
+
+
+<br>
+<p align="justify">
+De la matrix de correlacion vemos que las variable con menor correlacion son:
+</p>
+- Sepal.width - Petal.length con r=-0.4284401
+- Sepal.width - Petal.width con r=-0.3661259
+
+```{r}
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(iris[,1:4])
+
+#Matriz de Correlaciones total
+plot(iris[,1:4], main="Matriz de Correlaciones de las variable de la data Iris")
+```
+
+<p align="justify">
+Se graficara primero las relaciones de correlacion maximas las cuales son:
+</p>
+* [1] Petal.length - Petal.width
+* [2] Sepal.length - Petal.length
+
+
+```{r,eval=TRUE}
+#Correlacion entre Petal.length y Petal.width
+plot(iris$Petal.length,iris$Petal.width,main="[1] Correlacion entre Petal.length y Petal.width, r=0.9628654")
+
+#Correlacion entre Sepal.length y Petal.length
+plot(iris$Sepal.length,iris$Petal.length,main="[2] Correlacion entre Sepal.length y Petal.length, r=0.871738")
+```
+
+<p align="justify">
+Se graficara las relaciones de correlacion minimas las cuales son:
+</p>
+
+* [4] Sepal.width - Petal.length
+* [5] Sepal.width - Petal.width
+
+```{r, eval=TRUE}
+#Correlacion entre Sepal.width y Petal.length
+plot(iris$Sepal.width,iris$Petal.length,main="[4] Correlacion entre Sepal.width y Petal.length, r=-0.4284401")
+
+#Correlacion entre Sepal.width y Petal.width
+plot(iris$Sepal.width,iris$Petal.width,main="[5] Correlacion entre Sepal.width y Petal.width, r=-0.3661259")
+```
+
+**Comentario**
+<p align="justify">
+Se observa que la correlacion mas alta corresponde entre la variable Petal.length y Petal.width, la cual es $r=.9628654$, esto nos  indica que si una variable aumenta la otra variable aunmenta tambien, a esta correlacion se le denomina correlacion positiva fuerte fuerte. La correlacion mas baja se da entre las variables Sepal.width y Petal.length, la cual es $r=-0.4284401$, esto nos indica que que si una variable aumenta la otra disminuye, a esta correlacion se la denomina correlacion negativa debil.
+</p>
+<br>
+
+---
+
+**PARA LA DATA DECATHLON**
+<p align="justify">
+De la matrix de correlacion de las variables Decathlon, vemos que las variable con mayor correlacion son:
+</p>
+- Shot.put - Discus con r=0.6157681
+- X100m - X110m.hurdle con r=0.579888931
+
+
+<br>
+<p align="justify">
+De la matrix de correlacion vemos que las variable con menor correlacion son:
+</p>
+- X400m - Long.jump con r=-0.60206262
+- Long.jump - X100m con r=-0.59867767
+
+```{r}
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(deca[,1:10])
+
+#Matriz de Correlaciones total
+plot(deca[,1:10], main="Matriz de Correlaciones de las variable de la data Decathlon")
+```
+
+<p align="justify">
+Se graficara primero las relaciones de correlacion maximas las cuales son:
+</p>
+* [1] Shot.put - Discus con r=0.6157681
+* [2] X100m - X110m.hurdle con r=0.579888931
+
+
+```{r}
+#Correlacion entre Shot.put y Discus
+plot(deca$Shot.put,deca$Discus,main="[1] Shot.put - Discus con r=0.6157681")
+
+#Correlacion entre X100m y X110m.hurdle
+plot(deca$X100m,deca$X110m.hurdle,main="[2] X100m - X110m.hurdle con r=0.579888931")
+```
+
+<p align="justify">
+Se graficara las relaciones de correlacion minimas las cuales son:
+</p>
+* [3] X400m - Long.jump con r=-0.60206262
+* [4] Long.jump - X100m con r=-0.59867767
+
+
+```{r}
+#Correlacion entre X400m y Long.jump
+plot(linne$Flexiones,linne$Cintura,main="[3] X400m - Long.jump, r=-0.60206262")
+
+#Correlacion entre Long.jump y X100m
+plot(linne$Lanzamientos,linne$Pulsaciones,main="[4] Long.jump - X100m, r=-0.59867767")
+```
+
+**Comentario**
+<p align="justify">
+Se observa que la correlacion mas alta corresponde entre las variables Shot.put y Discus, la cual es $r=0.6157681$, esto nos  indica que si una variable aumenta la otra variable aunmenta tambien, a esta correlacion se le denomina correlacion positiva fuerte debil. La correlacion mas baja se da entre las variables X400m y Long.jump, la cual es $r=-0.60206262$, esto nos indica que que si una variable aumenta la otra disminuye, a esta correlacion se la denomina correlacion negativa debil.
+</p>
+<br>
+
+
+# PREGUNTA 3
+<p align="justify">
+Con los datos de Decathlon (sin puntaje y rango) calcular las estadisticas univariadas
+de las diez especialidades para las dos clases Olimpiadas y Decastar.¿Cual es la razon
+de correlacion por cada especialidad? Cual es la que distingue mas los dos grupos?
+</p>
+<br>
+
+**Solucion**
+<p align="justify">
+De los datos Decathlon, se hara las estadisticas univariadas por diciplina(variable cuantitativa)
+y se presentara la tabla respectiva.
+</p>
+
+
+```{r}
+#numero de variables 
+n=length(deca)-3
+
+for (i in c(1:n)){
+  #titulo de la tabla
+  cat("\n\n")
+  print(noquote(paste0(prefix="Estadistica Univariada de la variable ",colnames(deca)[i])))
+  
+  #Total de observaciones de la variable i
+  n_t = length(deca[,i])
+  
+  #Media de las observaciones de la variable i
+  m_t = mean(deca[,i])
+  
+  #Varianza de las observaciones de la variable i
+  v_t = var(deca[,i])*(n_t-1)/n_t
+  
+  #Desviacon Standar de las observaciones de la variable i
+  s_t = sqrt(v_t)
+  
+  #Coeficiente de variacion de las observaciones de la variable i
+  cvt = s_t/m_t
+  
+  #Agrupamiento de las estadisticas totales
+  total=rbind(n_t,m_t,v_t,s_t,cvt)
+  
+  #Estadisticas por varible categorica (Variable 13)
+  n_unit=table(deca[,13])
+  
+  #MEdia por categorica (Variable 13)
+  mean=tapply(deca[,i],deca[,13],mean)
+  
+  #Varianza por categorica (Variable 5)
+  var=tapply(deca[,i],deca[,13],var)
+  var=var*(n_unit-i)/n_unit
+  
+  #Desviacion Standar por categorica (Variable 13)
+  stdev=sqrt(var)
+  cv=stdev/mean
+  
+  #Agrupamiento de las estadisticas parciales por variable categorica
+  brk=rbind(n_unit,mean,var,stdev,cv)
+  
+  #Agrupamiento de la estadisticas por categoria (Var 13) contra la estadistica global(var i)
+  brtot=cbind(brk,total)
+  colnames(brtot) = c(colnames(brk),"total")
+  print(brtot)
+  
+  e2 = sum(n_unit*(mean-m_t)^2) / (n_t*v_t)  
+  e=sqrt(e2)
+  cat("Razon de correlacion(e): ",e)
+}
+```
+
+<p align="justify">
+Observe que para valores que se acerca a $e=1$, la dispersión de la variable global se 
+debe únicamente a la dispersión entre las categorías y en absoluto debido a la dispersión
+dentro de las categorías individuales. Para nuestro caso quien distigue mas los dos 
+grupos categoricos es la variable X100m, con una razon de correlacion de $e=0.4651118$
+</p>
+
+# PREGUNTA 4
+<p align="justify">
+¿Como se comparte la inercia total (suma de las inercias de cada variable) entre las dos 
+clases y dentro de ellas?
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Primero se hara el calculo de la inercia total:
+</p>
+
+```{r}
+#eliminando columnas
+deca<-subset(deca,select=-Rank)
+deca<-subset(deca,select=-Points)
+
+#numero de variables 
+n=length(deca)-1
+
+#numero de observaciones
+m=dim(deca)[1]
+
+#Estadisticas por varible categorica (Variable 13)
+n_unit=table(deca[,n])
+
+#calculo del centroide total
+G<- matrix(nrow = 1, ncol = n)
+for (i in c(1:n)){
+  G[1,i]<-mean(deca[,i])
+}  
+
+#matriz llena con el promedio en todas sus filas
+mat<-G
+for(i in 1:(m-1)){
+  mat<-rbind(mat,G)
+}
+
+#calculo de las inercias
+I<-0
+dif<-deca[,1:10]-mat
+for (i in 1:m){
+  #deca[i,12]=sqrt(sum(dif[i,]*dif[i,]))
+  I=I+sum(dif[i,]*dif[i,])
+}
+cat("SST=",I)
+```
+
+<br>
+<p align="justify">
+Ahora se calculara la inercias por grupo, para lo cual se separara el dataframe por
+clases y cada clase se calculara sus inercias correspondientes.
+</p>
+```{r,eval=TRUE}
+#separacion de la tabla deca por clases
+df<-split(deca,deca$Competition)
+```
+
+<br>
+Para el calculo de la Inercia de la clase Decastar, se tiene:
+
+```{r,eval=TRUE}
+#numero de variables 
+n=length(df$Decastar)-1;
+
+#numero de observaciones
+m1=dim(df$Decastar)[1];
+
+#cALCULO DEL CENTROIDE
+G1<- matrix(nrow = 1, ncol = n)
+for (i in c(1:n)){
+  G1[1,i]<-mean(df$Decastar[,i])
+}  
+cat("Centroide de Decastar(G1):\n",G1)
+
+#matriz llena todas sus filas con el centroide de la clase 1
+mat<-G1
+for(i in 1:(m1-1)){
+  mat<-rbind(mat,G1)
+}
+
+#calculo de las inercias por grupo 1.
+I1<-0
+dif<-df$Decastar[,1:10]-mat
+for (i in 1:m1){
+  I1=I1+sum(dif[i,]*dif[i,])
+}
+cat("SSD1=",I1)
+```
+
+<br>
+Para el calculo de la Inercia de la clase OlympicG, se tiene:
+
+```{r,eval=TRUE}
+#numero de variables 
+n=length(df$OlympicG)-1
+
+#numero de observaciones
+m2=dim(df$OlympicG)[1]
+
+#cALCULO DEL CENTROIDE
+G2<- matrix(nrow = 1, ncol = n)
+for (i in c(1:n)){
+  G2[1,i]<-mean(df$OlympicG[,i])
+}  
+cat("Centroide de OlympicG (G2):\n",G2)
+
+#matriz llena todas sus filas con el centroide de la clase 1
+mat<-G2
+for(i in 1:(m2-1)){
+  mat<-rbind(mat,G2)
+}
+
+#calculo de las inercias por grupo 2
+I2<-0
+dif<-df$OlympicG[,1:10]-mat
+for (i in 1:m2){
+  I2=I2+sum(dif[i,]*dif[i,])
+}
+cat("SSD2=",I2)
+```
+
+<br>
+Se procedera calcular la Inercia entre clases (SSC):
+```{r,eval=TRUE}
+SSC<-m1*sum((G1-G)*(G1-G))+m2*sum((G2-G)*(G2-G))
+```
+<br>
+*Resumen de los calculos*
+
+```{r}
+for( i in 1:1){
+  cat("######################   RESUMEN DE CALCULOS   #######################\n\n")
+  cat("Centroide total de los datos(G):\n",G)
+  cat("\nNumero observaciones totales(n):",m)
+  cat("\nInercia total (SST):",I)
+  
+  cat("\n\nCentroide de la clase Decastar(G1):\n",G1)
+  cat("\nNumero observaciones por la clase Decastar(n1):",m1)
+  cat("\nInercia dentro de clase Decastar(SSD1):",I1)
+  
+  cat("\n\nCentroide de la clase OlympicG(G2):\n",G2)
+  cat("\nNumero observaciones por la clase OlympicG(n2):",m2)
+  cat("\nInercia dentro de clase OlympicG(SSD2):",I2)
+  
+  cat("\n\nInercia dentro de clases(SSD=SSD1+SSD2):",I1+I2)
+  cat("\n\nInercia entres clases(SSC):",SSC)
+  cat("\n\nCalculo de SSD+SSC:",SSC+I1+I2)  
+}
+
+```
+**Comentarios**
+
+<p align="justify">
+Se observa que SSD+SSC=SST, lo cual nos indica que los calculos estan correctos. Una inercia dentro de las clases(SSD) alta indica que hay una considerable variabilidad dentro de cada clase o grupo en relación con la variable que estás analizando. Esto sugiere que las observaciones dentro de cada clase pueden ser bastante heterogéneas, a pesar de que pertenecen a la misma categoría.
+</p>
+<br>
+
+# PREGUNTA 5
+<p align="justify">
+Calcular tambien la matriz de correlacion global y relativa a las dos clase. ¿Le parece
+muy combinada?
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Primero se calculara la matrix de correlacion Global de las variables Decathlon sin hacer la distincion
+de las dos clases.Vemos que las variable con mayor correlacion son:
+</p>
+
+<p align="justify">
+Vemos que la variable con mayor correlacion es:
+</p>
+- Shot.put - Discus con r=0.6157681 (mayor)
+- Long.jump - X100m con r=-0.59867767 (menor)
+<br>
+
+
+```{r}
+#Calculo de correlacion de toda la tabla, cruzando variables
+cor(deca[,1:10])
+
+#Matriz de Correlaciones total
+plot(deca[,1:10], main="Matriz de Correlaciones Global de las variable de la data Decathlon")
+```
+
+<p align="justify">
+Ahora se calculara la matrix de correlacion por variable por clases. Se inicia separando el dataframe
+ses segun las clases Decastar y OlympicG, con el siguiente codigo:
+</p>
+
+
+```{r}
+#separacion de la tabla deca por clases
+df<-split(deca,deca$Competition)
+```
+
+<p align="justify">
+Ahora se calculara la matrix de correlacion por la clase Decastar:
+</p>
+
+```{r}
+#matriz de correlacion para la clase Decastar
+cor(df$Decastar[,1:10])
+```
+
+Se observa de matriz de correlacion, la relacion mas alta y la menor:
+
+* X400m - X110.hurdle, r=0.6999014
+* X1500m - X100m, r=-0.61609866
+
+<br>
+
+
+<p align="justify">
+Ahora se calculara la matrix de correlacion por la clase OlympicG:
+</p>
+
+```{r}
+#matriz de correlacion para la clase OlympicG
+cor(df$OlympicG[,1:10])
+```
+
+
+Se observa de matriz de correlacion, la relacion mas alta y la menor:
+
+* Shot.put - Long.jump, r=0.6657743
+* Long.jump - X100m, r=-0.70496966
+
+<br>
+
+**Comentario**
+<p align="justify">
+Al estar todos los datos juntos, los datos pierden relacion entre ellas, esa asi que la correlacion combinada es r(glb)=0.6157681, crece cuando separamos por clases, esto es
+r(Decastar)=0.6999014 y r(OlympicG)=0.6657742$. Es asi que procesar los datos en conjunto sin separar por clases, estan muy variados y pierde relacion entre ellas. Al procesarlo por separado las correlaciones, crecen teniendose una mejor correlacion, lo cual nos indica
+</p>
+<br>
+
+# PREGUNTA 6
+<p align="justify">
+Repetir los pasos 4 y 5 para los datos Iris considerando las tres especies.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para este apartado, se hara una funcion en el cual se ingresara el dataframe al cual se quiere
+hallar su inercia total. La estructura del dataframe es que en la ultima variable este la variable
+cualitativa, el cual cual se excluira para el analasis.
+</p>
+
+
+```{r}
+Inercia<-function(df,nr){ 
+    #creacion de la lista vacia para los resultados
+    res<-list()  
+  
+    #numero de variables 
+    n<-length(df)-nr
+    
+    #numero de observaciones
+    m<-dim(df)[1]
+    res$m<-m
+    
+    #calculo del centroide del dateframe
+    G<- matrix(nrow = 1, ncol = n)
+    for (i in c(1:n)){
+      G[1,i]<-mean(df[,i])
+    }  
+    res$centroide<-G
+    
+    #matriz llena con el promedio en todas sus filas
+    mat<-G
+    for(i in 1:(m-1)){
+      mat<-rbind(mat,G)
+    }
+    
+    #calculo de la inercia
+    I<-0
+    dif<-df[,1:n]-mat
+    for (i in 1:m){
+      I=I+sum(dif[i,]*dif[i,])
+      #cat("\n",i," - ",sum(dif[i,]*dif[i,]))
+    }
+    #print(I)
+    res$inercia<-I
+    res
+}  
+```
+
+
+```{r}
+# Verificar la estructura de los datos
+str(iris)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris,n=10)
+```
+
+<br>
+<p align="justify">
+Ahora se separara el dataframe por clases. Los cuales se usaran luego con la funcion que 
+calcula las inercia.
+</p>
+```{r,eval=TRUE}
+#separacion de la tabla deca por clases
+dfs<-split(iris,iris$Species)
+```
+
+<br>
+Se usara el tema de la separacion del dataframe por clases y cada clase se calculara 
+su inercia.
+
+```{r,eval=TRUE}
+#calculo de las inercias por clases
+I_tot<-Inercia(iris,1)
+I_1<-Inercia(dfs$setosa,1)
+I_2<-Inercia(dfs$versicolor,1)
+I_3<-Inercia(dfs$virginica,1)
+
+for(i in (1:1)){
+    cat("######################   RESUMEN DE CALCULOS   #######################\n\n")
+    
+    cat("Centroide total de los datos(G):\n",I_tot$centroide)
+    cat("\nNumero observaciones totales(n):",I_tot$m)
+    cat("\nInercia total (SST):",I_tot$inercia)
+    
+    cat("\n\nCentroide de la clase setosa(G1):\n",I_1$centroide)
+    cat("\nNumero observaciones por la clase setosa(n1):",I_1$m)
+    cat("\nInercia dentro de clase setosa(SSD1):",I_1$inercia)
+    
+    cat("\n\nCentroide de la clase versicolor(G2):\n",I_2$centroide)
+    cat("\nNumero observaciones por la clase versicolor:",I_2$m)
+    cat("\nInercia dentro de clase versicolor(SSD2):",I_2$inercia)
+    
+    cat("\n\nCentroide de la clase virginica(G3):\n",I_3$centroide)
+    cat("\nNumero observaciones por la clase virginica:",I_3$m)
+    cat("\nInercia dentro de clase virginica(SSD2):",I_3$inercia)
+    
+    cat("\n\nSSC:",I_1$m*sum((I_1$centroide-I_tot$centroide)*(I_1$centroide-I_tot$centroide))
+      +I_2$m*sum((I_2$centroide-I_tot$centroide)*(I_2$centroide-I_tot$centroide))
+      +I_3$m*sum((I_3$centroide-I_tot$centroide)*(I_3$centroide-I_tot$centroide)))
+}
+```
+
+<br>
+Se calculo *SSD* de la siguiente forma:
+
+$$SSD=SSD1+SSD2+SSD3$$
+```{r}
+cat("SSD=SSD1+SSD2+SSD3=",I_1$inercia+I_2$inercia+I_3$inercia)
+
+```
+
+**Comentario**
+
+<p align="justify">
+Se observa que $SSD+SSC=SST$, lo cual nos indica que los calculos estan correctos. Cuanto mayor sea el valor de SSC en relación con la SSD, mayor será la proporción de variabilidad en los datos. Como $SSC=592.0732>>>SST=89.2974$, es alto no que las clases estan capturando la gran variabilidad del total
+de datos.
+</p>
+
