@@ -1,0 +1,392 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 1 - Instalacion y Primeros Comandos en RMARKDOWN"
+author: "Por: Cesar Omar Lopez Arteaga"
+date: "Febrero 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# A. INSTALACION DEL PROGRAMA
+
+<p align="justify">
+Primero entramos al sitio oficial para la descarga del programa R, para la descarga e instalacion correspondiente.
+</p>
+<a target="_blank" href="https://cloud.r-project.org/">  Link: R Project   </a>
+![R_project](C:/Users/GL2/Downloads/R IMCA/TAREA 1/imagenes/R_project.jpg){withd=80%}
+
+<p align="justify">
+Lo segundo es entrar al sitio oficial para la descarga del programa Rstudio, para la descarga e instalacion correspondiente.
+</p>
+<a target="_blank" href="https://posit.co/download/rstudio-desktop/#download">  Link: Rstudio   </a>
+![R_project](C:/Users/GL2/Downloads/R IMCA/TAREA 1/imagenes/Rstudio.jpg){withd=80%}
+
+# B. TRANSFORMANDO UN ARCHIVO COMANDO_1.R A .RMD
+
+## 1. ESPACIO DE TRABAJO
+
+<p align="justify">
+La función getwd() en R se utiliza para obtener el directorio de trabajo actual.
+Este comando es útil para verificar en qué directorio estás trabajando actualmente 
+en tu sesión de R.
+</p> 
+
+```{r echo=FALSE}
+setwd("C:/Users/GL2/Documents")
+```
+
+
+```{r}
+getwd()           
+```
+<p align="justify">
+En R, la función setwd() se utiliza para establecer el directorio de trabajo 
+actual. Esto significa que todos los archivos que se leen o se escriben se 
+buscarán en este directorio a menos que se especifique una ruta completa.
+</p> 
+
+```{r}
+setwd("C:/Users/GL2/Downloads/R IMCA/TAREA 1")
+
+```
+
+## 2. OPERACIONES ARITMETICAS
+
+<p align="justify">
+En R, se puede usar las operaciones aritmeticas usuales como suma, diferencia, 
+producto, divisiones, potenciacion, raiz, modulo, etc.
+</p> 
+
+```{r}
+3 + 5                                # Suma
+8 - 5                                # Diferéncia
+7 * 9                                # Producto
+25 / 5                               # Division
+2^3                                  # Poténciacion
+sqrt(16)                             # Raízes cuadradas
+16^(1/4)                             # y otras
+
+```
+
+En R, el orden de las operaciones aritméticas sigue la misma regla que en las matemáticas convencionales:
+
+- Paréntesis
+- Exponentes
+- Multiplicación y División
+- Adición y Sustracción
+
+A continuacion se muestra unos ejemplos de uso de orden de las operaciones aritmeticas en R:
+
+```{r}
+4+7 -3      #Primero se suma y luego la sutracion
+4*7-3       #Primero se multiplica, luego se sustrae
+-3 + 4 * 7  #Primero se multiplica, luego se adiciona
+-3+4        #Se adiciona un nuemero negativo con un numero positivo
+-3 + 4/2    #Primero se divide, luego se aadiciona al numero negtivo
+-(3+4)      #Primero se opera lo que esta dentro del parentesis,luego se cambia el signo
+-3 + (4/2)  #Primero se opera lo que esta en parentesis,luego se adiciona el numero negativo
+-(3 + 4)/2  #Se opera lo de parentesis, luego se hace la division
+
+```
+
+## 3. ASICNACION A OBJETOS Y OPERACIONES BASICAS
+
+<p align="justify">
+En R, puedes asignar valores a variables con "<-" o con "=". El símbolo "<-" se 
+utiliza comúnmente para asignar valores a variables, pero "=" también se puede
+utilizar para el mismo propósito, aunque es menos común. Aquí tienes algunos ejemplos:
+</p> 
+
+```{r}
+a = 7
+a
+a <- 7; a
+a + 5
+b <- 13
+c <- a * b; c
+e <- c / b + 5 ; e
+e <- c / (b + 5) ; e
+```
+
+## 4. CONJUNCION DE CARACTERES
+
+```{r}
+nombre   <- "Pedro"
+apellido <- "Ramirez"
+completo <- paste(nombre, apellido); completo  # con espacio
+completo <- paste(nombre, apellido, sep=""); completo # sin espacio
+completo <- paste(nombre, apellido, sep=","); completo # con coma
+print('nombre + 5 ')
+
+```
+
+## 5. VARIABLES BOOLEANAS
+
+<p align="justify">
+En R, las variables booleanas se representan utilizando los valores TRUE o FALSE. 
+Estos valores son útiles para realizar evaluaciones lógicas y controlar el flujo
+de ejecución de un programa.También es importante destacar que en R, TRUE y FALSE
+son palabras reservadas y no se pueden utilizar como nombres de variables. Sin 
+embargo, puedes utilizar T y F como sinónimos de TRUE y FALSE respectivamente.
+</p> 
+
+
+
+```{r}
+
+s <- TRUE; 
+s
+
+s <- FALSE; 
+s
+
+s <- a+b == 5; 
+s
+
+s <- a+b != 5; 
+s
+
+s <- !(a+b==5); 
+s; 
+!s
+
+```
+
+## 6. VECTORES Y OPERACIONES
+
+```{r}
+v <- c(1,2,3);  # come se construye un vector
+v
+c(1,2,3) + c(4,5,6)
+c(1,2,3) * c(4,5,6)
+w <- c(4,5,6)
+v + w
+z = c(-1.45, sqrt(7), 2^5, sin(1.5))
+z
+-z
+w + z
+za <- c(1,2,3,4,5,6); za
+za <- c(v,w); za
+w + za
+vc <- c("uno","dos","tres"); vc        # vector de caracteres
+str(vc); typeof(vc); length(vc)
+vn <- numeric(length=5); w             # definiciones sin valores
+wc <- character(length=4); wc
+r  <- rep(1,5); r                      # vector con valores repetidos
+f  <- rep(NA,6); f                     # vector con valores faltantes
+s  <- seq(1:6); s                      # valore en secuencia
+s  <- seq(from=5,to=25,by=5); s
+
+```
+
+## 7. MATRICES
+
+<p align="justify">
+En R, una matriz es una estructura de datos bidimensional que contiene elementos
+del mismo tipo. Puedes pensar en una matriz como una colección rectangular de 
+elementos organizados en filas y columnas.
+</p> 
+
+<p align="justify">
+Para la creacion de una matriz de **nrow** filas y **ncol** columnas, se usara 
+el comando:
+$$matrix(secuencia, nrow=... , ncol=... )$$
+</p> 
+
+
+```{r}
+# matrizes 
+m <- matrix(c(3,4,2,1,5,7),nrow = 2,ncol=3);
+m
+m <- matrix(c(3,4,2,1,5,7),nrow = 2,ncol=3,byrow = FALSE);
+m
+n <- matrix(c(3,4,2,1,5,7),nrow = 2,ncol=3,byrow = TRUE); 
+n
+dim(m); dim(n)
+
+d <- c(1,2,3,4,5,6,7,8);
+dm <- matrix(d,nrow=2,ncol=4); 
+dm
+t(dm) # trasposición
+str(dm); str(t(dm))
+m + n 
+m*n
+#m%*%n # producto filas por columnas
+dim(m); dim(n)
+m
+t(m)%*%n
+m%*%t(n)
+
+m[1,2]; m[2,c(2:3)]
+m[2,]; m[,2]
+m[,c(1,3)]
+```
+
+
+<br>
+
+## 8. LISTAS
+
+<p align="justify">
+En R, puedes crear listas utilizando la función list(). Las listas en R pueden 
+contener elementos de diferentes tipos de datos, como vectores, matrices, data 
+frames, u otras listas. 
+</p> 
+
+
+```{r}
+L         <- list(); L
+L$a       <- a; L
+L$b       <- b; L
+L$suma    <- 2*a+3*b; L
+L$martriz <- dm; L
+str(L)
+a         <- 29; L
+L$a       <- 29; L
+L$b; L[[2]]
+```
+
+<br>
+
+# C. TRABAJANDO EN RMARKDOWN 
+
+<p align="justify">
+Incluir también dos vectores (3,5,9,2.45,7) y (1,2,-10.32,4,7), sumarlos, hacer 
+la diferencia, el producto, la división, y el producto escalar.
+</p>
+
+
+```{r}
+#Suma de vectores
+c(3,5,9,2.45,7)+c(1,2,-10.32,4,7)
+```
+
+```{r}
+#Sustracion de vectores
+c(3,5,9,2.45,7)-c(1,2,-10.32,4,7)
+```
+
+```{r}
+#Division de vectores
+c(3,5,9,2.45,7)/c(1,2,-10.32,4,7)
+```
+
+```{r}
+#Producto escalar de vectores
+c(3,5,9,2.45,7)*c(1,2,-10.32,4,7)
+```
+
+<br>
+
+<p align="justify">
+Construir tres matrices, dos 3×4y otra 4×2, sumar y hacer el producto de las
+primeras, así como la potencia.
+</p>
+
+```{r}
+# Creacion de las matrices A y B de dimension 3,4
+A <- matrix(sample(1:(12), 12, replace = FALSE), nrow = 3, ncol = 4)
+B <- matrix(sample(1:(12), 12, replace = FALSE), nrow = 3, ncol = 4)
+# Creacion de las matrices C de dimension 4,2
+C <- matrix(sample(1:(8), 8, replace = FALSE), nrow = 4, ncol = 2)
+```
+
+
+```{r}
+#mostrando matriz A
+A
+```
+
+```{r}
+#mostrando matriz B
+B
+```
+
+```{r}
+#mostrando matriz C
+C
+```
+
+<p align="justify">
+Calculando la suma, producto y la potencia entre las matrices A y B.
+</p>
+
+
+```{r}
+#Suma de matrices
+A+B
+```
+
+```{r}
+#Multiplicacion de matrices punto a punto
+A*B
+```
+
+```{r}
+#Elevar una matriz a otra matriz punto a punto
+A^B
+```
+
+<p align="justify">
+Los posibles resultados entre la matriz por fila y columnas sera: A%$*$%C, A%$*$%t(B), 
+B%$*$%t(A), A%$*$%t(A), B%$*$%t(B), C%$*$%t(C),  t(A)%$*$%A, t(B)%$*$%B, t(C)%$*$%C.
+</p>
+
+```{r}
+#multiplicacion de matrices A%*%C
+A%*%C
+```
+
+
+```{r}
+#multiplicacion de matrices A%*%t(B)
+A%*%t(B)
+```
+
+```{r}
+#multiplicacion de matrices B%*%t(A)
+B%*%t(A)
+```
+
+```{r}
+#multiplicacion de matrices A%*%t(A)
+A%*%t(A)
+```
+
+
+```{r}
+#multiplicacion de matrices B%*%t(B)
+B%*%t(B)
+```
+
+
+```{r}
+#multiplicacion de matrices C%*%t(C)
+C%*%t(C)
+```
+
+
+```{r}
+#multiplicacion de matrices t(A)%*%A
+t(A)%*%A
+```
+
+```{r}
+#multiplicacion de matrices t(B)%*%B
+t(B)%*%B
+```
+
+```{r}
+#multiplicacion de matrices t(C)%*%C
+t(C)%*%C
+```
