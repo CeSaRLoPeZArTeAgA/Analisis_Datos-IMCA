@@ -1,0 +1,691 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 8 - Clasificacion K - means"
+author: "Por: César Omar López Arteaga"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# PREGUNTA 1
+<p align="justify">
+Bajar el archivo Clase_8.R
+</p>
+<br>
+
+**Solucion**
+
+
+```{r}
+# Análisis con k- means
+
+# Carga de la data Linnerud
+linnerud <- read.csv("F:/R IMCA/TAREA 8/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(linnerud)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(linnerud,n=10)
+
+#  inicialización
+dat      <- linnerud
+
+#numero de observaciones (numero filas)
+n        <- dim(dat)[1]
+
+#numero de variables cuantitativas
+p        <- dim(dat)[2]
+maxcl    <- round(n/2,0)
+wss      <- rep(0,maxcl)
+wssd     <- wss
+wssd2    <- wss
+CH       <- wss
+wss[1]   <- (n-1)*sum(apply(dat,2,var))
+
+#  varios tentativos con varias clases
+for (i in 1:maxcl) {
+  wss[i] <- sum(kmeans(dat,centers=i)$withinss);       # colectando la ssw
+  if (i>1) {
+    wssd[i-1]  <- wss[i-1]-wss[i]
+    CH[i] <- ((wss[1] - wss[i])/(i-1))/(wss[i]/(n-i))  # calculando el índice
+  }                                                    # de Calinski-Harabász 
+  if (i>2) wssd2[i-2] <- wssd[i-2]-wssd[i-1]           # pero también diferencias
+}
+index             <- cbind(wss,wssd,wssd2,CH)
+rownames(index)   <- c(1:maxcl)
+colnames(index)   <- c("SSW","D","D2","CH")
+index                                                  # tabla 
+
+# gráfico de los valores
+plot(1:maxcl, index[,1], type="l", xlab="Number of Clusters",
+     ylab="Within groups sum of squares", main = "K-means inertia variation")
+  lines(1:maxcl, index[,2],col="blue")
+  lines(1:maxcl, index[,3],col="red")
+  legend("topright",legend=c("Within sum of squares","Differences","Second differences"),col=c("black","blue","red"),lty=1)
+dev.copy(pdf,"linnerud_kmeans_wss.pdf")
+dev.off()  
+  
+plot(1:maxcl, index[,4], type="l", xlab="Number of Clusters",
+     ylab="Calinski-Harabász index", main = "K-means inertia variation")  
+dev.copy(pdf,"linnerud_kmeans_CH.pdf")
+dev.off()
+
+# kmeans con cuatro grupos y tres diferentes selecciones iniciales
+dat.kcl <- kmeans(dat,centers=4,nstart=3)
+dat.kcl
+summary(dat.kcl)
+dat.kcl$cluster        # atribución de las unidades a las clases
+dat.kcl$centers        # promedios de caracteres en cada clase
+dat.kcl$totss          # total sum of squares
+dat.kcl$tot.withinss   # total within sum of squares
+dat.kcl$betweenss      # between sum of squares
+dat.kcl$size           # tamaño de las clases
+dat.kcl$iter           # número de iteraciones  
+dat.kcl$ifault
+```
+
+
+
+# PREGUNTA 2
+<p align="justify">
+Con los datos de Iris, correr la clasificación k-means con 3 grupos.
+</p>
+<br>
+
+**Solucion**
+
+<br>
+<p align="justify">
+Se descargara el archivo Iris.csv a una carpeta local, luego se cargara el 
+archivo y se mostrara la estructura de la data, la cual llamaremos **"iris"**, 
+luego se muestra la tabla con las primeras 10 observaciones.
+</p> 
+
+```{r}
+# Carga de la data Iris
+iris<- read.csv("F:/R IMCA/TAREA 8/DESCARGA_DATA/Iris.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(iris)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(iris,n=10)
+```
+
+
+<p align="justify">
+
+</p> 
+
+```{r}
+#pasame el dataframe a total, a solo usar las variable cuantitativas
+iris.scale<-as.data.frame(iris[,1:4])
+
+#Visualizacion de la data scalada
+head(iris.scale,n=10)
+```
+
+
+
+<p align="justify">
+A continuacion plantamos la semilla de aleoteridad y aplicamos el la clasificacion
+k - means con tres cluster predifinidos
+</p> 
+
+```{r}
+#semilla de aleotariedad
+set.seed(50)
+
+#Hacemos clisificacion k-means
+iris.km<-kmeans(iris.scale,centers = 3)
+```
+
+<p align="justify">
+A continuacion presentamos los valores entregados por el modelo de clasificacion 
+k-means.
+</p> 
+```{r}
+for(i in 1:1){
+    cat("############# RESUMEN DE RESULTADOS  ###############\n")
+    #contenido del objeto creado
+    cat("\nContenido del objeto creado:\n",names(iris.km))
+    
+    #Asignacion observaciones a clusters
+    cat("\nAsignacion observaciones a clusters:\n",iris.km$cluster)
+    
+    #Inercia Total
+    cat("\nInercia Total:",iris.km$totss)
+    
+    #Inercia Inter Grupos
+    cat("\nInercia Inter Grupos:",iris.km$betweenss)
+    
+    #Inercia Intra Grupos
+    cat("\nInercia Intra Grupos por clusters:",iris.km$withinss)
+    
+    #Inercia Intra Grupos Total
+    cat("\nInercia Intra Grupos Total",iris.km$tot.withinss)
+}
+```
+
+
+
+
+# PREGUNTA 3
+<p align="justify">
+¿Se corresponde a la clasificación en tres especies? Cuales flores están mal 
+clasificados?
+</p>
+<br>
+**Solucion**
+
+<p align="justify">
+Para responder la presente pregunta se hara una comparacion entre la data original
+iris en la cual ya esta claficada las especies contra la clasificacion que puede hacer
+el k-means. Es asi que coje la data con las variables cualitativas y se hace la clasificacion con el k-means. La data inicial iris tenemos 150 observaciones, las cuales estan clasificadas de la siguiente forma:
+</p> 
+
+* De la observacion 001 - 050, corresponde a la especie Setosa, le pondremos etiqueta 2
+* De la observacion 051 - 100, corresponde a la especie Virginica, le pondremos etiqueta 3
+* De la observacion 101 - 150, corresponde a la especie Versicolor, le pondremos etiqueta 1
+
+<p align="justify">
+La data de clasificacio k-means tenemos 150 observaciones repartidas en 3 cluster, las cuales el algoritmo
+coloca etiquetas del 1 al 3, de la siguiente forma:
+</p> 
+
+```{r}
+#Asignacion observaciones a cluster
+iris.km$cluster
+```
+
+<p align="justify">
+Se hara un cuadro comparativo entre la data inicial iris, contra la data clasificada con k-means, esto
+para ver cual especie esta mal clasificado. En cuadro si la especie clasificada con 
+k-mean coindice con la clasificacion original se pondra "0" en caso contrario sera "1".
+</p> 
+
+
+```{r}
+x<-rbind(c(rep(2,50),rep(3,50),rep(1,50)),iris.km$cluster,rep(0,150))
+x<-t(x)
+y<-matrix(nrow=0,ncol=4)
+for (i in 1:150) {
+  if(x[i,1]!=x[i,2]){
+    x[i,3]=1
+    y<-rbind(y,c(i,x[i,1],x[i,2],x[i,3]))
+  }
+}
+colnames(x)<-c("Data Iris","Iris K-means","Diferencias")
+colnames(y)<-c("Obser N°","Data Iris","Iris K-means","Diferencias")
+print(x)
+```
+
+<p align="justify">
+De los resultados, tenemos un error de 16/150=10.66% de predicion o que esta mal clasificado inicialmente. La clasificacion de K-mean nos indica que las siguientes
+observaciones estan mal clasificadas. Se observa de la tabla que la que tiene problemas
+en la clasificacion es en la especie con etiqueta 3 de la data original Iris la cual 
+corresponde a la especie Virginia, las cuales estan siendo clasificadas con el K-means
+como especie de etiqueta 1 la cual corresponde a la especie Versicolor.
+</p> 
+
+```{r}
+#Impresion de la tabla con las diferencias en la clasificacion
+print(y)
+```
+
+
+
+# PREGUNTA 4
+<p align="justify">
+Calcular la razón de correlación y su tabla de “breakdown” sobre los tres grupos
+resultantes de la clasificación.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Luego de la clasificacion tenemos tres agrupamientos que hace el algoritmo, los cuales
+pasamos a identificar segun la data original. El criterio es el siguiente:
+</p>
+
+* Grupo 1, el cual corresponde a la especie versicolor
+
+* Grupo 2, el cual corresponde a la especie setosa 
+
+* Grupo 3, el cual corresponde a la especie virginica
+
+
+<p align="justify">
+A continuacion se pasara a pasar las etiquetas segun el critero anteriormenente mencionado:
+</p>
+
+
+```{r}
+#asignacion del criterio de agrupamiento del kmeans a la data original
+iris.scale$grupo <- as.factor(iris.km$cluster)
+
+#mostrando el dataframe antes del cambio de etiquetas.
+head(iris.scale,n=10)
+```
+
+
+<p align="justify">
+Se pasara a tranformar el dataframe para que tenga las etiquetas de la clasificacion y poder
+ver mas detalle del agrupamiento de la data:
+</p>
+
+```{r}
+# Cambiar la columna 'columna_factor' de factor a character basándote en un criterio de comparación término por término
+iris.scale$grupo <- sapply(iris.scale$grupo, function(x) {
+  if (x == "1") {
+    return("versicolor")
+  } else if (x == "2") {
+    return("setosa")
+  } else {
+    return("virginica")
+  }
+})
+
+# Convertir a character
+iris.scale$grupo <- as.character(iris.scale$grupo)
+
+# Mostrar el dataframe después del cambio
+print(iris.scale)
+```
+
+<p align="justify">
+Se hara la tabla breakdown sobre los tres grupos resultantes de la clasificación.
+</p>
+
+
+
+
+```{r}
+
+#Total de observaciones de la variable 1
+n_t = length(iris.scale[,1])
+
+#Media de las observaciones de la variable 1
+m_t = mean(iris.scale[,1])
+
+#Varianza de las observaciones de la variable 1
+v_t = var(iris.scale[,1])*(n_t-1)/n_t
+
+#Desviacon Standar de las observaciones de la variable 1
+s_t = sqrt(v_t)
+
+#Coeficiente de variacion de las observaciones de la variable 1
+cvt = s_t/m_t
+
+#Agrupamiento de las estadisticas totales
+total=rbind(n_t,m_t,v_t,s_t,cvt)
+
+#Estadisticas por varible categorica (Variable 5)
+n_unit=table(iris.scale[,5])
+
+#MEdia por categorica (Variable 5)
+mean=tapply(iris.scale[,1],iris.scale[,5],mean)
+
+#Varianza por categorica (Variable 5)
+var=tapply(iris.scale[,1],iris.scale[,5],var)
+var=var*(n_unit-1)/n_unit
+
+#Desviacion Standar por categorica (Variable 5)
+stdev=sqrt(var)
+cv=stdev/mean
+
+#Agrupamiento de las estadisticas parciales por variable categorica
+brk=rbind(n_unit,mean,var,stdev,cv)
+
+#Agrupamiento de la estadisticas por categoria (Var 5) contra la estadistica global(var 1)
+brtot=cbind(brk,total)
+colnames(brtot) = c(colnames(brk),"total")
+brtot
+
+```
+
+La razon de correlacion sera:
+
+```{r}
+#La razón de correlación se puede calcular en dos maneras bajo esta tabla
+e = sum(n_unit*(mean-m_t)^2) / (n_t*v_t) 
+cat("Razon de correlacion(e):",e)
+```
+
+Se presenta el diagrama de cajas con los datos clasificados con el algoritmo kmeans:
+```{r}
+boxplot(iris.scale[,1]~iris.scale[,5])
+```
+
+# PREGUNTA 5
+<p align="justify">
+Aplicando el K-means entre 1 y 10 clases, ¿cual parece la partición mejor?
+</p>
+<br>
+
+**Solucion**
+
+```{r}
+# Cargar biblioteca necesaria
+library(cluster)
+
+# Supongamos que tienes un dataframe llamado 'datos'
+
+# Calcular la suma de cuadrados dentro de grupos (WCSS) para un número variable de clases
+wcss <- sapply(1:10, function(k) {
+  kmeans(iris.scale[,1:4], centers = k)$tot.withinss
+})
+
+# Calcular el índice de la silueta para un número variable de clases
+silhouette <- sapply(2:10, function(k) {
+  mean(silhouette(kmeans(iris.scale[,1:4], centers = k)$cluster, dist(iris.scale[,1:4])))
+})
+
+# Graficar WCSS y el índice de la silueta para evaluar el número óptimo de clases
+par(mfrow = c(1, 2))
+plot(1:10, wcss, type = "b", xlab = "Número de Clases", ylab = "WCSS", main = "Método del Codo")
+plot(2:10, silhouette, type = "b", xlab = "Número de Clases", ylab = "Índice de Silueta", main = "Método de la Silueta")
+
+```
+
+<p align="justify">
+El criterio de la silueta en K-means es una medida de la calidad de la agrupación de datos. Básicamente, la silueta compara la distancia promedio entre un punto y los puntos del mismo cluster con la distancia promedio entre el mismo punto y los puntos de los clusters vecinos más cercanos. Un valor alto de silueta indica que el punto está bien agrupado, mientras que un valor bajo indica que el punto puede estar en el cluster incorrecto. Para nuestro caso el grafico indica el valor 3
+</p>
+
+
+<p align="justify">
+El criterio del método del codo en K-means se basa en la observación de la disminución en la suma de cuadrados dentro del cluster (WCSS) a medida que aumenta el número de clusters. La idea es encontrar el punto en el gráfico de WCSS versus el número de clusters donde la disminución de la WCSS se desacelera significativamente, formando lo que se denomina el "codo". Este punto se considera como una indicación del número óptimo de clusters para el conjunto de datos. Para nuestro caso seria entre 2 y 3 el numero de clusters.
+</p>
+
+
+<p align="justify">
+Entre ambos criterios se busca el optimos numero de clusters, el cual viene a ser 3.
+</p>
+
+
+# PREGUNTA 6
+<p align="justify">
+Estandarizar los datos de Iris, empleando el comando
+scale(X, center=TRUE,scale=TRUE), con X el archivo Iris, 
+limitadamente a las cuatro mediciones, y re-correr el k-means.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Se cargara la data iris y lo scalaremos con el comando *scale*.
+</p> 
+
+```{r}
+#Escalamos las varibales
+iris.scale<-as.data.frame(scale(iris[,1:4]))
+
+#Visualizacion de la data scalada
+head(iris.scale,n=10)
+```
+
+
+<p align="justify">
+A continuacion plantamos la semilla de aleoteridad y aplicamos el la clasificacion
+k - means con tres cluster predifinidos
+</p> 
+
+```{r}
+#semilla de aleotariedad
+set.seed(50)
+
+#Hacemos clisificacion k-means
+iris.km<-kmeans(iris.scale,centers = 3)
+```
+
+<p align="justify">
+A continuacion presentamos los valores entregados por el modelo de clasificacion 
+k-means.
+</p> 
+```{r}
+for(i in 1:1){
+    cat("############# RESUMEN DE RESULTADOS  ###############\n")
+    #contenido del objeto creado
+    cat("\nContenido del objeto creado:\n",names(iris.km))
+    cat("\n")
+    #Asignacion observaciones a cluster
+    #cat("\nAsignacion observaciones a clusters:\n",iris.km$cluster)
+    print(iris.km$cluster)
+    
+    #Inercia Total
+    cat("\nInercia Total:",iris.km$totss)
+    
+    #Inercia Inter Grupos
+    cat("\nInercia Inter Grupos:",iris.km$betweenss)
+    
+    #Inercia Intra Grupos
+    cat("\nInercia Intra Grupos por clusters:",iris.km$withinss)
+    
+    #Inercia Intra Grupos Total
+    cat("\nInercia Intra Grupos Total",iris.km$tot.withinss)
+}
+```
+
+
+# PREGUNTA 7
+<p align="justify">
+¿Se encuentran resultados mejores o peores? (para el breakdown, solo emplear la 
+clasificación salida, pero siempre las mediciones de Iris).
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Luego de la clasificacion tenemos tres agrupamientos que hace el algoritmo pero con la
+data escalada, los cuales pasamos a identificar segun la data original. 
+El criterio es el siguiente:
+</p>
+
+* Grupo 1, el cual corresponde a la especie versicolor
+
+* Grupo 2, el cual corresponde a la especie setosa 
+
+* Grupo 3, el cual corresponde a la especie virginica
+
+
+<p align="justify">
+A continuacion se pasara a pasar las etiquetas segun el critero anteriormenente mencionado:
+</p>
+
+
+```{r}
+#asignacion del criterio de agrupamiento del kmeans a la data original
+iris.scale$grupo <- as.factor(iris.km$cluster)
+
+#mostrando el dataframe antes del cambio de etiquetas.
+head(iris.scale,n=10)
+```
+
+
+<p align="justify">
+Se pasara a tranformar el dataframe para que tenga las etiquetas de la clasificacion y poder
+ver mas detalle del agrupamiento de la data:
+</p>
+
+```{r}
+# Cambiar la columna 'columna_factor' de factor a character basándote en un criterio de comparación término por término
+iris.scale$grupo <- sapply(iris.scale$grupo, function(x) {
+  if (x == "1") {
+    return("versicolor")
+  } else if (x == "2") {
+    return("setosa")
+  } else {
+    return("virginica")
+  }
+})
+
+# Convertir a character
+iris.scale$grupo <- as.character(iris.scale$grupo)
+
+# Mostrar el dataframe después del cambio
+print(iris.scale)
+```
+
+<p align="justify">
+Se hara la tabla breakdown sobre los tres grupos resultantes de la clasificación.
+</p>
+
+
+```{r}
+#Total de observaciones de la variable 1
+n_t = length(iris.scale[,1])
+
+#Media de las observaciones de la variable 1
+m_t = mean(iris.scale[,1])
+
+#Varianza de las observaciones de la variable 1
+v_t = var(iris.scale[,1])*(n_t-1)/n_t
+
+#Desviacon Standar de las observaciones de la variable 1
+s_t = sqrt(v_t)
+
+#Coeficiente de variacion de las observaciones de la variable 1
+cvt = s_t/m_t
+
+#Agrupamiento de las estadisticas totales
+total=rbind(n_t,m_t,v_t,s_t,cvt)
+
+#Estadisticas por varible categorica (Variable 5)
+n_unit=table(iris.scale[,5])
+
+#MEdia por categorica (Variable 5)
+mean=tapply(iris.scale[,1],iris.scale[,5],mean)
+
+#Varianza por categorica (Variable 5)
+var=tapply(iris.scale[,1],iris.scale[,5],var)
+var=var*(n_unit-1)/n_unit
+
+#Desviacion Standar por categorica (Variable 5)
+stdev=sqrt(var)
+cv=stdev/mean
+
+#Agrupamiento de las estadisticas parciales por variable categorica
+brk=rbind(n_unit,mean,var,stdev,cv)
+
+#Agrupamiento de la estadisticas por categoria (Var 5) contra la estadistica global(var 1)
+brtot=cbind(brk,total)
+colnames(brtot) = c(colnames(brk),"total")
+brtot
+
+```
+
+<p align="justify">
+Observamos que los coeficiente de variacion han crecido. Un coeficiente de variación 
+alto indica una gran variabilidad relativa en relación con la media. Esto puede 
+implicar que los datos tienen una dispersión significativa en comparación con su
+valor medio. En otras palabras, los valores individuales en el conjunto de datos 
+pueden ser muy diferentes entre sí en comparación con la media. Es decir al subir
+el coeficiente de variación puede indicar una inconsistencia significativa en la
+calidad de los datos agrupados. Por esta razon se podemos decir que los resultados 
+empeoran con el escalamiento. 
+</p>
+<br>
+
+# PREGUNTA 8
+<p align="justify">
+ Hacer lo mismo con datos de Linnerud, pero intentando diferentes clasificaciones 
+ y el índice CH, tanto para los datos brutos, como para los estandarizados.
+</p>
+<br>
+
+**Solucion**
+
+Primero iniciamos leyendo el archivos sin escalamiento:
+
+```{r}
+# Carga de la data Linnerud
+linnerSinEscalar <- read.csv("F:/R IMCA/TAREA 8/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+#Visualizacion de la data sin escalar
+head(linnerud,n=10)
+```
+
+
+Pasamos a escalar la data original,para hacer correr el algoritmo K-means:
+
+```{r}
+#Escalamos las varibales
+linnerud<-as.data.frame(scale(linnerSinEscalar[,1:6]))
+
+# Verificar la estructura de los datos
+str(linnerud)
+
+#Visualizacion de la data scalada
+head(linnerud,n=10)
+```
+
+
+
+```{r}
+# Análisis con k- means
+
+#  inicialización
+dat      <- linnerud
+
+#numero de observaciones (numero filas)
+n        <- dim(dat)[1]
+
+#numero de variables cuantitativas
+p        <- dim(dat)[2]
+maxcl    <- round(n/2,0)
+wss      <- rep(0,maxcl)
+wssd     <- wss
+wssd2    <- wss
+CH       <- wss
+wss[1]   <- (n-1)*sum(apply(dat,2,var))
+
+#  varios tentativos con varias clases
+for (i in 1:maxcl) {
+  wss[i] <- sum(kmeans(dat,centers=i)$withinss);       # colectando la ssw
+  if (i>1) {
+    wssd[i-1]  <- wss[i-1]-wss[i]
+    CH[i] <- ((wss[1] - wss[i])/(i-1))/(wss[i]/(n-i))  # calculando el índice
+  }                                                    # de Calinski-Harabász 
+  if (i>2) wssd2[i-2] <- wssd[i-2]-wssd[i-1]           # pero también diferencias
+}
+index2             <- cbind(wss,wssd,wssd2,CH)
+rownames(index2)   <- c(1:maxcl)
+colnames(index2)   <- c("SSW","D","D2","CH")
+
+for(i in 1:1){
+  cat("Tabla con la data bruta\n")
+  print(index)                                                  
+}
+
+for(i in 1:1){
+  cat("Tabla con la data Estandarizada\n")
+  print(index2)                                                 
+}
+```
+
+# PREGUNTA 9
+<p align="justify">
+¿Cual clasificación le parece mejor?
+</p>
+<br>
+
+**Solucion**
+<p align="justify">
+Se observa de la tabla bruta que el maximo CH=25.31 correspondiente a dos agrupamientos
+mientras que de la tabla estandarizada el maximo CH=8.81 correspondiente a tres agrupamientos.
+Esto nos indica un mejor clasificacion con la data estandarizada, el cual nos indica tres agrupamientos.
+</p>
