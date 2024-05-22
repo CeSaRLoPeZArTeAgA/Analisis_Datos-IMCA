@@ -1,0 +1,717 @@
+---
+title: "<h1>MAESTRIA EN MODELIZACION MATEMATICA Y COMPUTACIONAL - IMCA<br><br> Analisis de Datos y Estadistica Inferencial</h1>"
+subtitle: "Tarea 11 - DESCOMPOSICION ESPECTRAL"
+author: "Por: César Omar López Arteaga"
+date: "Abril 2024"
+output: 
+  html_document:
+    toc: true   
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show 
+lang: "es-ES"
+---
+
+# PREGUNTA 1
+<p align="justify">
+Cargar los datos X de Linnerud y de Decathlon (solo 10 especialidades).
+</p>
+<br>
+
+**Solucion**
+
+Se leera la data de la ruta donde se guardo, luego se mostrara la etructura de la data,
+al final se motrara 10 obervaciones:
+
+<br>
+
+**Para la data Linnerud**
+
+```{r}
+# Carga de la data Linnerud
+linner <- read.csv("G:/R IMCA/TAREA 11/DESCARGA_DATA/Linnerud.csv",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(linner)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(linner,n=20)
+```
+<br>
+
+**Para la data Decathon**
+
+```{r,eval =TRUE}
+
+# Carga de la data decathlon
+decat <- read.csv("G:/R IMCA/TAREA 11/DESCARGA_DATA/Decathlon_cpl.CSV",header=TRUE,row.names=1)
+
+# Verificar la estructura de los datos
+str(decat)
+
+# Visualizar los primeros registros de los datos sin modificar
+head(decat,n=10)
+```
+
+
+
+
+# PREGUNTA 2
+<p align="justify">
+Calcular las matrices de correlación C.
+</p>
+<br>
+
+**Solucion**
+
+<br>
+
+**Calculo de la matriz de correlacion C, para la data Linnerud**
+
+
+```{r}
+# Calcular la matriz de correlación
+linner.cor <- cor(linner)
+
+# Mostrar la matriz de correlación
+print(linner.cor)
+```
+
+<br>
+
+**Calculo de la matriz de correlacion C, para la data Decathlon**
+```{r}
+# Calcular la matriz de correlación
+decat.cor <- cor(decat[1:10])
+
+# Mostrar la matriz de correlación
+print(decat.cor)
+```
+
+
+# PREGUNTA 3
+<p align="justify">
+Estandarizar los datos Z, utilizando la varianza de los datos (dividiendo por n y no por n-1).
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+El presente apartado, se hace una funcion para que estandarize la matriz, teniendo en cuenta
+la correcion de la varianza.
+</p>
+
+```{r}
+#funcion de estandariza los datos 
+Z<-function(datos){
+  dimen<-dim(datos)
+  n<-dimen[1]
+  m<-dimen[2]
+  for(i in 1:m){
+    prom<-mean(datos[,i])
+    var<-((n-1)/n)*var(datos[,i])
+    dev<-sqrt(var)
+    datos[,i]<-((datos[,i]-prom)/dev)
+  }
+return(datos)
+}
+
+```
+<p align="justify">
+Aplicando la funcion a la data Linnerud y Decathlon, con lo cual se obtiene las
+matrices de estandarizacion de cada data.
+</p>
+
+
+```{r}
+#matriz de estandarizacion de Linnerud 
+for(i in 1:1){
+  Z.linner<-Z(linner)
+  cat("Matriz Estandarizada de Linnerud \n\n")
+  print(Z.linner)
+}
+```
+
+
+```{r}
+#matriz de estandarizacion de Decathlon
+for(i in 1:1){
+  Z.decat<-Z(decat[1:10])
+  cat("Matriz Estandarizada de Decathlon\n\n")
+  print(Z.decat)
+}
+```
+
+
+# PREGUNTA 4
+<p align="justify">
+Averiguar que el producto Z’Z se corresponde a n veces la matriz de correlación (y que 1/n Z’Z es la matriz de correlación).
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+En este apartado se usara las matrices calculadas en el apartado 3, y se averiguar que 
+el producto Z’Z se corresponde a n veces la matriz de correlación.
+</p>
+
+```{r}
+for(i in 1:1){
+  cat("Matriz transp(Z)*Z\n")
+  print(as.matrix(t(Z.linner))%*%as.matrix(Z.linner))
+  
+  cat("\nNumero de observaciones n:")
+  print(dim(Z.linner)[1])
+  
+  cat("\nMatriz de Correlacion C\n")
+  print(linner.cor)
+  
+  cat("\nMatriz n.C\n")
+  print(dim(Z.linner)[1]*linner.cor)
+  
+  cat("\nMatriz (transp(Z)*Z)/n \n")
+  print((as.matrix(t(Z.linner))%*%as.matrix(Z.linner))/dim(Z.linner)[1])
+}
+```
+<p align="justify">
+Asi se comprueba que para la data de Linnerud se cumplen las siguientes formulas:  
+</p>
+ $$ Z^{t}.Z=n.C $$
+$$C=\frac{1}{n}Z^{t}.Z$$
+
+```{r}
+for(i in 1:1){
+  cat("Matriz transp(Z)*Z\n")
+  print(as.matrix(t(Z.decat))%*%as.matrix(Z.decat))
+  
+  cat("\nNumero de observaciones n:")
+  print(dim(Z.decat)[1])
+  
+  cat("\nMatriz de Correlacion C\n")
+  print(decat.cor)
+  
+  cat("\nMatriz n.C\n")
+  print(dim(Z.decat)[1]*decat.cor)
+  
+  cat("\nMatriz (transp(Z)*Z)/n \n")
+  print((as.matrix(t(Z.decat))%*%as.matrix(Z.decat))/dim(Z.decat)[1])
+}
+```
+<p align="justify">
+Asi se comprueba que para la data de Decathlon se cumplen las siguientes formulas: 
+</p>
+ $$ Z^{t}.Z=n.C $$
+$$C=\frac{1}{n}Z^{t}.Z$$
+
+# PREGUNTA 5
+<p align="justify">
+Descomponer a valores singulares 1/n Z’Z.
+</p>
+<br>
+
+**Solucion**
+
+
+Descomponer una matriz en valores singulares (Singular Value Decomposition, SVD 
+en inglés) es un concepto fundamental en álgebra lineal. Matemáticamente, la descomposición SVD se expresa como:
+
+$$X=UΣV^{t}$$ 
+Donde: 
+
+*   X es la matriz que se descompone, de tamaño de tamaño $m×n$.
+*   U es una matriz unitaria (ortogonal) de tamaño $m×m$.
+*   $Σ$ es la matriz diagonal de tamaño $m×n$ con valores singulares no negativos ordenados de mayor a menor en la diagonal.
+*   $V^{t}$ es la matriz traspuesta de una matriz unitaria (ortogonal) de tamaño $n×n$
+
+
+Es asi que se cumple por el apartado 4:
+
+$$ C=\frac{1}{n}Z^{t}.Z $$
+
+<p align="justify">
+Se procede a hacer la descomposicion SDV de la matriz de correlacion C de la data Linnerud 
+</p>
+
+
+```{r}
+library(MASS)
+for(i in 1:1){
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(linner.cor)
+  
+  # Matriz U
+  U <- descomposicion_svd$u
+  
+  # Matriz Sigma
+  Sigma <- diag(descomposicion_svd$d)
+  
+  # Matriz V
+  V <- descomposicion_svd$v
+  
+  # Mostrar las matrices U, Sigma y V
+  print("#### DESCOMPOSICION SDV DE LA MATRIZ DE CORRELACION C DE LA DATA LINNERUD ####")
+  cat("\n")
+  print("Matriz C:")
+  print(linner.cor)
+  cat("\n")
+  print("Matriz U:")
+  print(U)
+  cat("\n")
+  print("Matriz Sigma:")
+  print(Sigma)
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+  cat("Corroboracion de descompiscion SDV: C=U.Σ.V^t \n")
+  print(as.matrix(U)%*%as.matrix(Sigma)%*%t(as.matrix(V))  )
+}
+```
+
+
+<p align="justify">
+Se procede a hacer la descomposicion SDV de la matriz de correlacion C de la data Decathlon
+</p>
+
+
+```{r}
+library(MASS)
+for(i in 1:1){
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(decat.cor)
+  
+  # Matriz U
+  U <- descomposicion_svd$u
+  
+  # Matriz Sigma
+  Sigma <- diag(descomposicion_svd$d)
+  
+  # Matriz V
+  V <- descomposicion_svd$v
+  
+  # Mostrar las matrices U, Sigma y V
+  print("#### DESCOMPOSICION SDV DE LA MATRIZ DE CORRELACION C DE LA DATA DECATHLON ####")
+  cat("\n")
+  print("Matriz C:")
+  print(decat.cor)
+  cat("\n")
+  print("Matriz U:")
+  print(U)
+  cat("\n")
+  print("Matriz Sigma:")
+  print(Sigma)
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+  cat("Corroboracion de descompiscion SDV: C=U.Σ.V^t \n")
+  print(as.matrix(U)%*%as.matrix(Sigma)%*%t(as.matrix(V))  )
+}
+```
+
+
+# PREGUNTA 6
+<p align="justify">
+Hacer la descomposición espectral de C.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+La descomposición espectral de una matriz A es una factorización en la que A se 
+descompone en términos de sus eigenvectores y eigenvalores. Matemáticamente, para 
+una matriz cuadrada A de tamaño $n×n$, la descomposición espectral se puede expresar como
+</p>
+
+$$M=VΛV^{-1}$$
+Donde:
+
+*   V es una matriz cuyas columnas son los eigenvectores de M.
+*   Λ es una matriz diagonal que contiene los eigenvalores de M.
+
+
+<p align="justify">
+Se procedera a hacer la descomposición espectral de la matriz de correlacion de la data de Linnerud.
+</p>
+
+
+```{r}
+for(i in 1:1){
+  print("#### DESCOMPOSICION ESPECTRAL DE LA MATRIZ DE CORRELACION C DE LA DATA LINNERRUD ####")
+  cat("\n")
+  
+  # Calcular la descomposición espectral
+  descomposicion_espectral <- eigen(linner.cor)
+  
+  # Eigenvectores
+  eigenvectores <- descomposicion_espectral$vectors
+  
+  # Eigenvalores
+  eigenvalores <- descomposicion_espectral$values
+  
+  # Mostrar los eigenvectores y eigenvalores
+  cat("\n")
+  print("Matriz C:")
+  print(linner.cor)
+  cat("\n")
+  print("Eigenvectores:")
+  print(eigenvectores)
+  cat("\n")
+  print("Eigenvalores:")
+  print(eigenvalores) 
+  cat("\n")
+  Λ<-diag(eigenvalores)
+  print("Matriz Λ")
+  print(Λ)
+  cat("\n")
+  V<-eigenvectores
+  print("Matriz V")
+  print(V)
+  cat("\n")
+  # Reconstruir la matriz original
+  cat("Corroboracion de descompiscion espectral: C=V.Λ.inv(V)")
+  cat("\n")
+  matriz_reconstruida <- V %*% Λ %*% solve(V)
+  print(matriz_reconstruida)
+}
+```
+
+<p align="justify">
+Se procedera a hacer la descomposición espectral de la matriz de correlacion de la data de Decathlon.
+</p>
+
+
+```{r}
+for(i in 1:1){
+  print("#### DESCOMPOSICION ESPECTRAL DE LA MATRIZ DE CORRELACION C DE LA DATA DECATHLON ####")
+  cat("\n")
+  
+  # Calcular la descomposición espectral
+  descomposicion_espectral <- eigen(decat.cor)
+  
+  # Eigenvectores
+  eigenvectores <- descomposicion_espectral$vectors
+  
+  # Eigenvalores
+  eigenvalores <- descomposicion_espectral$values
+  
+  # Mostrar los eigenvectores y eigenvalores
+   cat("\n")
+  print("Matriz C:")
+  print(decat.cor)
+  cat("\n")
+  print("Eigenvectores:")
+  print(eigenvectores)
+  cat("\n")
+  print("Eigenvalores:")
+  print(eigenvalores)
+  cat("\n")
+  Λ<-diag(eigenvalores)
+  print("Matriz Λ")
+  print(Λ)
+  cat("\n")
+  V<-eigenvectores
+  print("Matriz V")
+  print(V)
+  cat("\n")
+  # Reconstruir la matriz original
+  cat("Corroboracion de descompiscion espectral: C=V.Λ.inv(V)")
+  cat("\n")
+  matriz_reconstruida <- V %*% Λ %*% solve(V)
+  print(matriz_reconstruida)
+}
+```
+
+
+
+
+# PREGUNTA 7
+<p align="justify">
+Averiguar que el cuadrado de los valores singulares corresponde a los autovalores.
+</p>
+<br>
+
+**Solucion**
+```{r}
+# Cargar la librería 'MASS' que contiene la función 'svd'
+library(MASS)
+
+for(i in 1:1){
+  # Definir una matriz cuadrada 
+  matriz <- linner.cor
+  
+  # Realizar la descomposición a valores singulares (SVD)
+  svd_resultado <- svd(matriz)
+  
+  # Obtener los valores singulares y elevar al cuadrado
+  valores_singulares <- svd_resultado$d^2
+  
+  # Calcular los autovalores de la matriz original
+  # Calcular los valores propios de la matriz de producto interno
+  autovalores <- eigen(t(matriz) %*% matriz)$values
+  #autovalores <- eigen(matriz_cuadrada)$values
+  
+  # Imprimir los cuadrados de los valores singulares y los autovalores
+  print("CORROBOARCION DEL CUADRO DE VALORES SINGULAES ES UN AUTOVALOR - LINNERUD")
+  print("valores singulares:")
+  print(svd_resultado$d)
+  print("Cuadrados de los valores singulares:")
+  print(valores_singulares)
+  print("Autovalores:")
+  print(autovalores)
+}
+```
+
+```{r}
+# Cargar la librería 'MASS' que contiene la función 'svd'
+library(MASS)
+
+for(i in 1:1){
+  # Definir una matriz cuadrada 
+  matriz <- decat.cor
+  
+  # Realizar la descomposición a valores singulares (SVD)
+  svd_resultado <- svd(matriz)
+  
+  # Obtener los valores singulares y elevar al cuadrado
+  valores_singulares <- svd_resultado$d^2
+  
+  # Calcular los autovalores de la matriz original
+  # Calcular los valores propios de la matriz de producto interno
+  autovalores <- eigen(t(matriz) %*% matriz)$values
+  #autovalores <- eigen(matriz_cuadrada)$values
+  
+  # Imprimir los cuadrados de los valores singulares y los autovalores
+  print("CORROBOARCION DEL CUADRO DE VALORES SINGULAES ES UN AUTOVALOR - DECATHLON")
+  print("valores singulares:")
+  print(svd_resultado$d)
+  print("Cuadrados de los valores singulares:")
+  print(valores_singulares)
+  print("Autovalores:")
+  print(autovalores)
+}
+```
+
+# PREGUNTA 8
+<p align="justify">
+Averiguar que las matrices V de las dos descomposiciones son las mismas.
+</p>
+<br>
+
+**Solucion**
+
+**Analizando para la data Linnerud**
+
+La matriz V de la descomposion SDV(pregunta 5) sera:
+
+```{r}
+library(MASS)
+for(i in 1:1){
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(linner.cor)
+  # Matriz V
+  V <- descomposicion_svd$v
+  # Mostrar las matrices U, Sigma y V
+  print("#### DESCOMPOSICION SDV DE LA MATRIZ DE CORRELACION C DE LA DATA LINNERUD ####")
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+}
+```
+
+La matriz V de la descomposion Espectral(pregunta 6) sera:
+
+```{r}
+for(i in 1:1){
+  print("#### DESCOMPOSICION ESPECTRAL DE LA MATRIZ DE CORRELACION C DE LA DATA LINNERRUD ####")
+  cat("\n")
+  # Calcular la descomposición espectral
+  descomposicion_espectral <- eigen(linner.cor)
+  # Eigenvectores
+  eigenvectores <- descomposicion_espectral$vectors
+  V<-eigenvectores
+  print("Matriz V")
+  print(V)
+  cat("\n")
+}  
+
+```
+
+
+**Analizando para la data Decathon**
+
+La matriz V de la descomposion SDV(pregunta 5) sera:
+```{r}
+library(MASS)
+for(i in 1:1){
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(decat.cor)
+  # Matriz V
+  V <- descomposicion_svd$v
+  # Mostrar las matrices U, Sigma y V
+  print("#### DESCOMPOSICION SDV DE LA MATRIZ DE CORRELACION C DE LA DATA DECATHLON ####")
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+}
+
+```
+
+
+La matriz V de la descomposion Espectral(pregunta 6) sera:
+```{r}
+
+for(i in 1:1){
+  print("#### DESCOMPOSICION ESPECTRAL DE LA MATRIZ DE CORRELACION C DE LA DATA DECATHLON ####")
+  cat("\n")
+  # Calcular la descomposición espectral
+  descomposicion_espectral <- eigen(decat.cor)
+  # Eigenvectores
+  eigenvectores <- descomposicion_espectral$vectors
+  V<-eigenvectores
+  print("Matriz V")
+  print(V)
+  cat("\n")
+}  
+
+```
+
+
+**Comentario**
+
+<p align="justify">
+Se observa que la matriz V generada por la descomposicion espectral, esta se genera
+con lo vectores propios encontrando, en foma que cada vector propio es una columna 
+de la matriz V. El programa R tiene una forma de generar estos vectores, de los cuales a veces los puede poner positivos o negativos, segun el criterio de la programa. Es asi que los dos matrices de V de ambas descomposiciones son casi 
+iguales, a excepcion de de signos.
+</p>
+<br>
+
+# PREGUNTA 9
+<p align="justify">
+Averiguar que K = U’Z = ƩV’ y que la correlación entre los K es cero.
+</p>
+<br>
+
+**Solucion**
+
+<p align="justify">
+Para este apartado, se traera el calculo de la matriz Z el cual es la estandarizado de los datos originales(apartado 3). Para ellos se usara una funcion el cual hara el trabajo de estandarizacion. La matriz U viene del calculo de la descomposicion de los valores singulares SDV (apartado 5) de la matriz Z. Se hara los calculos por cada juego de datos
+</p>
+
+
+```{r}
+#funcion de estandariza los datos 
+Z<-function(datos){
+  dimen<-dim(datos)
+  n<-dimen[1]
+  m<-dimen[2]
+  for(i in 1:m){
+    prom<-mean(datos[,i])
+    var<-((n-1)/n)*var(datos[,i])
+    dev<-sqrt(var)
+    datos[,i]<-((datos[,i]-prom)/dev)
+  }
+return(datos)
+}
+```
+<br>
+
+**Analizando para la data Linnerud**
+
+```{r}
+library(MASS)
+for(i in 1:1){
+  #matriz de estandarizacion de Linnerud 
+  Z.linner<-Z(linner)
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(Z.linner)
+  # Matriz U
+  U <- descomposicion_svd$u
+  # Matriz Sigma
+  Sigma <- diag(descomposicion_svd$d)
+  # Matriz V
+  V <- descomposicion_svd$v
+  # Mostrar las matrices U, Sigma y V
+  print("Matriz U:")
+  print(U)
+  cat("\n")
+  cat("Matriz Z:\n")
+  print(Z.linner)
+  cat("\n")
+  cat("CORROBORACION  K1=U'.Z\n")
+  print(t(as.matrix(U))%*%as.matrix(Z.linner))
+  cat("\n")
+  print("Matriz Sigma:")
+  print(Sigma)
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+  cat("CORROBORACION K2: K2=Σ.V'\n")
+  print(as.matrix(Sigma)%*%t(as.matrix(V)))
+}
+```
+
+<p align="justify">
+Se corrobora que K1 es igual a K2, para los datos de Linnerud. Por ellos se cumple: K = U’Z = ƩV’
+</p>
+
+
+<br>
+
+**Analizando para la data Decathon**
+
+
+```{r}
+library(MASS)
+for(i in 1:1){
+  #matriz de estandarizacion de Decathon
+  Z.decat<-Z(decat[1:10])
+  # Realizar la descomposición en valores singulares
+  descomposicion_svd <- svd(Z.decat)
+  # Matriz U
+  U <- descomposicion_svd$u
+  # Matriz Sigma
+  Sigma <- diag(descomposicion_svd$d)
+  # Matriz V
+  V <- descomposicion_svd$v
+  # Mostrar las matrices U, Sigma y V
+  print("Matriz U:")
+  print(U)
+  cat("\n")
+  cat("Matriz Z:\n")
+  print(Z.linner)
+  cat("\n")
+  cat("CORROBORACION  K1=U'.Z\n")
+  print(t(as.matrix(U))%*%as.matrix(Z.decat))
+  cat("\n")
+  print("Matriz Sigma:")
+  print(Sigma)
+  cat("\n")
+  print("Matriz V:")
+  print(V)
+  cat("\n")
+  cat("CORROBORACION K2: K2=Σ.V'\n")
+  print(as.matrix(Sigma)%*%t(as.matrix(V)))
+}
+```
+
+<p align="justify">
+Se corrobora que K1 es igual a K2, para los datos de Decathon. Por ellos se cumple: K = U’Z = ƩV’
+</p>
+
+
+
+
+
